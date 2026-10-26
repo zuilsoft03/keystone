@@ -1,0 +1,103 @@
+{
+ "actions": [],
+ "creation": "2026-10-10 21:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "issingle": 1,
+ "field_order": [
+  "offsite_section",
+  "offsite_enabled",
+  "offsite_keep_days",
+  "status_section",
+  "last_offsite_status",
+  "last_offsite_set",
+  "column_break_status",
+  "last_offsite_at",
+  "last_offsite_message",
+  "last_backup_now"
+ ],
+ "fields": [
+  {
+   "fieldname": "offsite_section",
+   "fieldtype": "Section Break",
+   "label": "Off-host copies",
+   "description": "Every nightly backup set is also copied to the NAS share named in the server's settings file (OFFSITE_DIR), into a folder for this site, and checked against its checksums there. The share must carry the marker file .cw-offsite-target (RUNBOOK §10.5), so a NAS that is not mounted is never mistaken for it."
+  },
+  {
+   "default": "1",
+   "fieldname": "offsite_enabled",
+   "fieldtype": "Check",
+   "label": "Copy backups off the server"
+  },
+  {
+   "default": "30",
+   "fieldname": "offsite_keep_days",
+   "fieldtype": "Int",
+   "label": "Keep copies for (days)",
+   "description": "Older sets are removed from the NAS after each copy; the newest set, and at least 7 sets, always stay.",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "status_section",
+   "fieldtype": "Section Break",
+   "label": "Last copy"
+  },
+  {
+   "fieldname": "last_offsite_status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nOK\nFAILED\nDISABLED",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_offsite_set",
+   "fieldtype": "Data",
+   "label": "Backup set",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_status",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "last_offsite_at",
+   "fieldtype": "Datetime",
+   "label": "At",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_offsite_message",
+   "fieldtype": "Small Text",
+   "label": "Message",
+   "read_only": 1
+  },
+  {
+   "description": "The last Back up now from the set-up page (JSON: ok, at, size, file name).",
+   "fieldname": "last_backup_now",
+   "fieldtype": "Small Text",
+   "label": "Last Back up now",
+   "read_only": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-10-26 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Backup Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "read": 1,
+   "write": 1,
+   "role": "System Manager",
+   "print": 1,
+   "email": 1,
+   "share": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

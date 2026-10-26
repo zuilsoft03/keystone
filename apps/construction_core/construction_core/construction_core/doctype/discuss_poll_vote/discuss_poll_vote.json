@@ -1,0 +1,115 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "hash",
+ "creation": "2026-10-21 12:00:00.000000",
+ "description": "One person's vote for one option (P3-68, design §3.7): System Manager only, so an anonymous poll names no voter.",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "message",
+  "thread",
+  "poll",
+  "user",
+  "option",
+  "slot",
+  "project",
+  "audience",
+  "staff_only"
+ ],
+ "fields": [
+  {
+   "fieldname": "message",
+   "fieldtype": "Link",
+   "label": "Message",
+   "read_only": 1,
+   "options": "Discuss Message",
+   "reqd": 1,
+   "search_index": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "thread",
+   "fieldtype": "Link",
+   "label": "Thread",
+   "read_only": 1,
+   "options": "Discuss Thread",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "poll",
+   "fieldtype": "Link",
+   "label": "Poll",
+   "read_only": 1,
+   "options": "Discuss Poll",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "read_only": 1,
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "option",
+   "fieldtype": "Data",
+   "label": "Option",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "slot",
+   "fieldtype": "Data",
+   "label": "Slot",
+   "read_only": 1,
+   "reqd": 1,
+   "description": "'single' in a one-choice poll, else the option: unique (poll, user, slot)."
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Construction Project",
+   "read_only": 1,
+   "options": "Construction Project",
+   "ignore_user_permissions": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "audience",
+   "fieldtype": "Data",
+   "label": "Audience",
+   "read_only": 1
+  },
+  {
+   "fieldname": "staff_only",
+   "fieldtype": "Check",
+   "label": "Staff Only",
+   "read_only": 1,
+   "default": "0"
+  }
+ ],
+ "links": [],
+ "modified": "2026-10-21 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Discuss Poll Vote",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

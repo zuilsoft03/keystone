@@ -1,0 +1,3 @@
+<p>{% if brand %}The team at {{ brand | e }}{% else %}The project team{% endif %} would like {% if again %}a file from you again{% else %}a few files from you{% endif %}.</p>
+<p><a href="{{ link | e }}">Sign in to see the files we asked for</a></p>
+{{ credit_html | safe }}

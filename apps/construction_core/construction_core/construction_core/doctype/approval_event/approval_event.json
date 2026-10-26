@@ -1,0 +1,145 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "hash",
+ "creation": "2026-10-24 12:00:00.000000",
+ "description": "One event of a project's approval chain (approvals design §4.1, §4.4; D-428): append-only, hash-chained, written only by approvals.log under its claim. No role has permissions on it; the canonical text is stored exactly as hashed.",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "project",
+  "seq",
+  "kind",
+  "request",
+  "actor",
+  "at_utc",
+  "high_water",
+  "out_of_order",
+  "column_break_hashes",
+  "terms_hash",
+  "prev_hash",
+  "hash",
+  "section_canonical",
+  "canonical"
+ ],
+ "fields": [
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "in_list_view": 1,
+   "label": "Construction Project",
+   "options": "Construction Project",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "description": "The event's place in its project's chain, from 1; unique per project.",
+   "fieldname": "seq",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Sequence",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "kind",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Kind",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "description": "Data, never a Link (approvals design §7).",
+   "fieldname": "request",
+   "fieldtype": "Data",
+   "label": "Request",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "description": "The session user at that moment (Data, never a Link).",
+   "fieldname": "actor",
+   "fieldtype": "Data",
+   "label": "Actor",
+   "read_only": 1
+  },
+  {
+   "description": "The server's time in UTC, with microseconds.",
+   "fieldname": "at_utc",
+   "fieldtype": "Datetime",
+   "label": "Time (UTC)",
+   "read_only": 1
+  },
+  {
+   "description": "The chain's latest time so far (UTC): the greater of the previous event's high water and this time.",
+   "fieldname": "high_water",
+   "fieldtype": "Datetime",
+   "label": "High Water (UTC)",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "Earlier than the chain's high water when written: kept, and flagged in its text.",
+   "fieldname": "out_of_order",
+   "fieldtype": "Check",
+   "label": "Out of Order",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_hashes",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "terms_hash",
+   "fieldtype": "Data",
+   "label": "Terms Hash",
+   "length": 64,
+   "read_only": 1
+  },
+  {
+   "fieldname": "prev_hash",
+   "fieldtype": "Data",
+   "label": "Previous Hash",
+   "length": 64,
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "description": "SHA-256(previous hash + newline + canonical text).",
+   "fieldname": "hash",
+   "fieldtype": "Data",
+   "label": "Hash",
+   "length": 64,
+   "read_only": 1,
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "section_canonical",
+   "fieldtype": "Section Break",
+   "label": "Canonical text"
+  },
+  {
+   "fieldname": "canonical",
+   "fieldtype": "Long Text",
+   "ignore_xss_filter": 1,
+   "label": "Canonical Text",
+   "read_only": 1,
+   "reqd": 1
+  }
+ ],
+ "in_create": 1,
+ "links": [],
+ "modified": "2026-10-24 18:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Approval Event",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

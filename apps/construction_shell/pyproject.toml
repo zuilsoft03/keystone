@@ -1,0 +1,24 @@
+[project]
+name = "construction_shell"
+authors = [
+    { name = "Construction Workspace", email = "maintainers@construction-workspace.invalid"}
+]
+description = "The staff workspace and the client portal: a Vue 3 + frappe-ui single-page app on construction_core"
+requires-python = ">=3.14"
+readme = "README.md"
+dynamic = ["version"]
+dependencies = [
+    # "frappe~=16.0.0" # Installed and managed by bench.
+]
+
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.ruff]
+line-length = 110
+target-version = "py314"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "tab"

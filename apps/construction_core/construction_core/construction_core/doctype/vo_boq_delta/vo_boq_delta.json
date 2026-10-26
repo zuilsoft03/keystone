@@ -1,0 +1,75 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "creation": "2026-10-09 18:51:10.425415",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "boq_line",
+  "description",
+  "qty_delta",
+  "rate_delta",
+  "uom",
+  "amount_delta"
+ ],
+ "fields": [
+  {
+   "description": "Name of the BOQ Line row it changes; empty for a new item",
+   "fieldname": "boq_line",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "BOQ Line"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Description",
+   "reqd": 1
+  },
+  {
+   "fieldname": "qty_delta",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Qty Delta"
+  },
+  {
+   "description": "For a new item, the rate",
+   "fieldname": "rate_delta",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Rate Delta"
+  },
+  {
+   "fieldname": "uom",
+   "fieldtype": "Data",
+   "label": "Unit",
+   "description": "m, m², m³, pcs, lot… (free text; D-104)"
+  },
+  {
+   "fieldname": "amount_delta",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Amount Delta",
+   "read_only": 1,
+   "precision": "2"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-10-24 20:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "VO BOQ Delta",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

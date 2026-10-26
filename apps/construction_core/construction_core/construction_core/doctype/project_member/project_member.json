@@ -1,0 +1,106 @@
+{
+ "actions": [],
+ "creation": "2026-10-10 20:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "cc_workspace_role",
+  "email",
+  "full_name",
+  "job_title",
+  "may_approve",
+  "approver_state",
+  "image",
+  "welcome_email_sent"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "User",
+   "options": "User",
+   "reqd": 1,
+   "ignore_user_permissions": 1
+  },
+  {
+   "fieldname": "cc_workspace_role",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Workspace Role",
+   "options": "\nProject Manager\nArchitect\nEngineer\nSite\nConsultant\nClient"
+  },
+  {
+   "fetch_from": "user.email",
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "user.full_name",
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Full Name",
+   "read_only": 1
+  },
+  {
+   "description": "Shown to the project team only (P3-04, D-151); clients never receive it.",
+   "fieldname": "job_title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Job title",
+   "length": 140,
+   "permlevel": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "may_approve",
+   "fieldtype": "Check",
+   "label": "May approve",
+   "permlevel": 1,
+   "read_only": 1,
+   "no_copy": 1,
+   "description": "P3-77 (approvals design §3.2): set through the approver settings only; the chain's designation events decide."
+  },
+  {
+   "fieldname": "approver_state",
+   "fieldtype": "Select",
+   "label": "Approver",
+   "options": "\nWaiting for confirmation\nConfirmed",
+   "permlevel": 1,
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fetch_from": "user.user_image",
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "hidden": 1,
+   "label": "Image",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "welcome_email_sent",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Welcome Email Sent",
+   "no_copy": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-10-24 19:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Project Member",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "istable": 1,
+ "editable_grid": 1
+}

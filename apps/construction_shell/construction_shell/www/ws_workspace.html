@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ title | e }}</title>
+<link rel="icon" href="{{ favicon | e }}">
+{% if touch_icon %}<link rel="apple-touch-icon" href="{{ touch_icon | e }}">
+<link rel="manifest" href="/assets/construction_shell/shell/manifest.webmanifest">
+{% endif %}
+{% if view == "app" %}
+<script>
+// The viewer's saved Light/Dark choice (D-126), set before the first paint; frappe-ui's useColorScheme keeps it after.
+(function () { try { var s = localStorage.getItem("theme"); var dark = s === "dark" || ((!s || s === "system") && matchMedia("(prefers-color-scheme: dark)").matches); document.documentElement.setAttribute("data-theme", dark ? "dark" : "light"); } catch (e) {} })();
+</script>
+{% for href in styles %}<link rel="stylesheet" href="{{ href | e }}">
+{% endfor %}
+{% else %}
+<style>
+body { margin: 0; font-family: Inter, -apple-system, "Segoe UI", sans-serif; font-size: 14px; color: #171717; background: #f7f7f7; }
+main { max-width: 520px; margin: 15vh auto 0; padding: 0 16px; }
+h1 { font-size: 20px; font-weight: 600; margin: 0 0 8px; }
+p { color: #5f5f5f; line-height: 1.5; margin: 0 0 16px; }
+a { color: #1d6fc2; }
+</style>
+{% endif %}
+</head>
+<body>
+{% if view == "app" %}
+<div id="app"></div>
+<script>
+window.csrf_token = {{ csrf_token | tojson }};
+window.cc_boot = {{ boot | tojson }};
+</script>
+<script type="module" src="{{ script | e }}"></script>
+{% elif view == "refused" %}
+<main>
+<h1>This area is for the project team</h1>
+<p>Your account opens the client portal instead.</p>
+<p><a href="/portal">Go to the client portal</a></p>
+</main>
+{% elif view == "not_built" %}
+<main>
+<h1>The workspace is not available</h1>
+<p>This server has no build of the workspace app. Desk is still available.</p>
+<p><a href="/app">Open Desk</a></p>
+</main>
+{% else %}
+<main>
+<h1>Page not found</h1>
+<p>There is no page at this address.</p>
+<p><a href="/workspace">Go to the workspace</a></p>
+</main>
+{% endif %}
+</body>
+</html>

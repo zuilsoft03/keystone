@@ -1,0 +1,117 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "hash",
+ "creation": "2026-10-24 12:00:00.000000",
+ "description": "An answer's personal detail beside its chain event (approvals design §4.1, §4.8; D-428): the event holds only a salted commitment to these values. Written only by approvals.log; deleted only by its retention function (approvals.log.clear_detail). No role has permissions on it.",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "event",
+  "project",
+  "salt",
+  "network_address",
+  "ip_trust",
+  "wsgi_peer",
+  "column_break_device",
+  "user_agent",
+  "browser",
+  "system",
+  "location"
+ ],
+ "fields": [
+  {
+   "description": "Data, never a Link (approvals design §7).",
+   "fieldname": "event",
+   "fieldtype": "Data",
+   "label": "Event",
+   "read_only": 1,
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "label": "Construction Project",
+   "options": "Construction Project",
+   "read_only": 1,
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "description": "128 random bits, hex: the commitment is SHA-256(salt + newline + the canonical values).",
+   "fieldname": "salt",
+   "fieldtype": "Data",
+   "label": "Salt",
+   "length": 32,
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "network_address",
+   "fieldtype": "Data",
+   "ignore_xss_filter": 1,
+   "label": "Network Address",
+   "read_only": 1
+  },
+  {
+   "fieldname": "ip_trust",
+   "fieldtype": "Data",
+   "ignore_xss_filter": 1,
+   "label": "Address Trust",
+   "read_only": 1
+  },
+  {
+   "fieldname": "wsgi_peer",
+   "fieldtype": "Data",
+   "ignore_xss_filter": 1,
+   "label": "WSGI Peer",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_device",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "user_agent",
+   "fieldtype": "Small Text",
+   "ignore_xss_filter": 1,
+   "label": "User-Agent",
+   "read_only": 1
+  },
+  {
+   "fieldname": "browser",
+   "fieldtype": "Data",
+   "ignore_xss_filter": 1,
+   "label": "Browser",
+   "read_only": 1
+  },
+  {
+   "fieldname": "system",
+   "fieldtype": "Data",
+   "ignore_xss_filter": 1,
+   "label": "System",
+   "read_only": 1
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Small Text",
+   "ignore_xss_filter": 1,
+   "label": "Location",
+   "read_only": 1
+  }
+ ],
+ "in_create": 1,
+ "links": [],
+ "modified": "2026-10-24 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Approval Evidence Detail",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

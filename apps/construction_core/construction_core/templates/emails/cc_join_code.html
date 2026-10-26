@@ -1,0 +1,5 @@
+{% if logo_url %}<p style="margin: 0 0 16px;"><img src="{{ logo_url | e }}" alt="{{ brand | e }}" height="40" style="height: 40px; width: auto; border: 0;"></p>{% endif %}
+<p>{% if brand %}Your code for {{ brand | e }} is:{% else %}Your {{ product | e }} code is:{% endif %}</p>
+<p style="font-size: 24px; font-weight: 600; letter-spacing: 4px;">{{ code | e }}</p>
+<p>It works for {{ minutes | e }} minutes. If you didn't ask for it, you can ignore this email; nobody can use your address without the code.</p>
+{{ credit_html | safe }}

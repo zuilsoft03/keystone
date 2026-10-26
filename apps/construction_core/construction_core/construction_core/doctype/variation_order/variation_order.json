@@ -1,0 +1,250 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "format:VO-{project}-{###}",
+ "creation": "2026-10-09 18:51:10.586291",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "project",
+  "title",
+  "stage",
+  "reason",
+  "time_extension_days",
+  "column_break_1",
+  "original_contract_sum",
+  "vo_delta_sum",
+  "revised_contract_sum",
+  "approved_by",
+  "approved_on",
+  "boq_revision",
+  "client_visible",
+  "client_approval_required",
+  "amounts_include_vat",
+  "work_started_on",
+  "decision_request",
+  "section_description",
+  "description",
+  "section_deltas",
+  "deltas",
+  "section_files",
+  "attachments",
+  "distribution"
+ ],
+ "fields": [
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Construction Project",
+   "options": "Construction Project",
+   "reqd": 1,
+   "search_index": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title",
+   "reqd": 1
+  },
+  {
+   "default": "Potential Change",
+   "fieldname": "stage",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Stage",
+   "options": "Potential Change\nChange Order Request\nApproved Change\nRejected"
+  },
+  {
+   "default": "Client Request",
+   "fieldname": "reason",
+   "fieldtype": "Select",
+   "label": "Reason",
+   "options": "Client Request\nDesign Change\nSite Condition\nAuthority Requirement\nOther"
+  },
+  {
+   "fieldname": "time_extension_days",
+   "fieldtype": "Int",
+   "label": "Time Extension (days)"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "original_contract_sum",
+   "fieldtype": "Currency",
+   "label": "Original Contract Sum",
+   "read_only": 1
+  },
+  {
+   "fieldname": "vo_delta_sum",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "VO Delta",
+   "read_only": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "revised_contract_sum",
+   "fieldtype": "Currency",
+   "label": "Revised Contract Sum",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approved_by",
+   "fieldtype": "Link",
+   "label": "Approved By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approved_on",
+   "fieldtype": "Datetime",
+   "label": "Approved On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "boq_revision",
+   "fieldtype": "Link",
+   "label": "BOQ Revision",
+   "options": "BOQ",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "Visible in the client portal once issued",
+   "fieldname": "client_visible",
+   "fieldtype": "Check",
+   "label": "Client Visible"
+  },
+  {
+   "default": "0",
+   "description": "Approving the change waits for the client's approval while the project's Portal approvals are on",
+   "fieldname": "client_approval_required",
+   "fieldtype": "Check",
+   "label": "Client approval required"
+  },
+  {
+   "default": "0",
+   "fieldname": "amounts_include_vat",
+   "fieldtype": "Check",
+   "label": "Amounts include VAT"
+  },
+  {
+   "description": "Asked when the change is sent for the client's approval; empty: not started",
+   "fieldname": "work_started_on",
+   "fieldtype": "Date",
+   "label": "Work started on",
+   "no_copy": 1
+  },
+  {
+   "description": "The approval of the Decision this variation was made from (Make the variation)",
+   "fieldname": "decision_request",
+   "fieldtype": "Data",
+   "label": "Decision approval",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_description",
+   "fieldtype": "Section Break",
+   "label": "Description"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text Editor",
+   "label": "Description"
+  },
+  {
+   "fieldname": "section_deltas",
+   "fieldtype": "Section Break",
+   "label": "BOQ Deltas"
+  },
+  {
+   "fieldname": "deltas",
+   "fieldtype": "Table",
+   "label": "Deltas",
+   "options": "VO BOQ Delta"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "section_files",
+   "fieldtype": "Section Break",
+   "label": "Attachments and distribution"
+  },
+  {
+   "fieldname": "attachments",
+   "fieldtype": "Table",
+   "label": "Attachments",
+   "options": "Attachment Ref"
+  },
+  {
+   "fieldname": "distribution",
+   "fieldtype": "Table",
+   "label": "Distribution",
+   "options": "Distribution User"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-24 20:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Variation Order",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Construction Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Construction Staff",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "search_fields": "title,stage",
+ "show_title_field_in_link": 1,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "title",
+ "track_changes": 1
+}

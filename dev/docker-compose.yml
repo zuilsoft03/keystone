@@ -1,0 +1,263 @@
+# ws-dev — the development stack on the `core` deploy profile (D-083, D-087, D-104): Frappe + our apps, no ERPNext.
+# No Suite, Raven or Draw. Image: ws-dev/frappe:core, built by dev/build-core-image.sh from pinned SHAs.
+#
+# Our apps are bind-mounted and put on PYTHONPATH, so a code change needs only a service restart, never an
+# install into a running stack (README trap 2 in phase0/sandbox). Delivery images bake the app in (P1-10).
+# Only port 9600 is published. Teardown: docker compose -p ws-dev -f dev/docker-compose.yml down -v
+
+name: ws-dev
+
+x-image: &image
+  image: ${DEV_IMAGE:-ws-dev/frappe:core}
+
+x-app: &app
+  <<: *image
+  environment:
+    PYTHONPATH: /home/frappe/frappe-bench/apps/construction_core:/home/frappe/frappe-bench/apps/construction_shell
+  volumes:
+    - core-sites:/home/frappe/frappe-bench/sites
+    - ../apps/construction_core:/home/frappe/frappe-bench/apps/construction_core
+    # P2-02: the shell (depends on construction_core). Its built app comes from dev/build-shell.sh.
+    - ../apps/construction_shell:/home/frappe/frappe-bench/apps/construction_shell
+
+x-backend: &backend
+  <<: *app
+  depends_on:
+    configurator:
+      condition: service_completed_successfully
+
+services:
+  db:
+    image: mariadb:11.8
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+      - --max_allowed_packet=256M
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?run dev/up.sh, which writes dev/.env}
+      MARIADB_AUTO_UPGRADE: "1"
+    volumes:
+      - core-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  redis-cache:
+    image: redis:7-alpine
+
+  redis-queue:
+    image: redis:7-alpine
+    volumes:
+      - core-redis-queue-data:/data
+
+  configurator:
+    <<: *app
+    entrypoint: ["bash", "-c"]
+    # P3-76 (bypass-2): templates render with Frappe's restricted globals. The key must be present and the integer 0
+    # (a missing key, 1 or the string "0" leaves them unrestricted); "bench set-config -g disable_render_safe_exec None"
+    # deletes it, and a hand edit can delete it or make it a string.
+    command:
+      - >
+        ls -1 apps > sites/apps.txt;
+        bench set-config -g db_host db;
+        bench set-config -gp db_port 3306;
+        bench set-config -g redis_cache "redis://redis-cache:6379";
+        bench set-config -g redis_queue "redis://redis-queue:6379";
+        bench set-config -g redis_socketio "redis://redis-queue:6379";
+        bench set-config -gp socketio_port 9000;
+        bench set-config -gp developer_mode 1;
+        bench set-config -gp webserver_port 8000;
+        bench set-config -gp workers '{"thumbs": {"timeout": 900}}';
+        bench set-config -gp max_file_size 262144000;
+        bench set-config -gp disable_render_safe_exec 0;
+    depends_on:
+      db:
+        condition: service_healthy
+      redis-cache:
+        condition: service_started
+      redis-queue:
+        condition: service_started
+    restart: on-failure
+
+  backend:
+    <<: *backend
+    networks:
+      default:
+        # The realtime server authenticates by calling the site URL; in the dev stack that must reach gunicorn.
+        aliases: [dev.localhost]
+      office: {}  # fetches edited files back from the Document Server (P1-17)
+      scan: {}  # sends each client file to clamd before it is stored (P3-07, D-159)
+
+  websocket:
+    <<: *backend
+    command: ["node", "/home/frappe/frappe-bench/apps/frappe/socketio.js"]
+
+  queue-short:
+    <<: *backend
+    command: ["bench", "worker", "--queue", "short,default,long"]
+
+  # P3-75 (design §15.1, D-416, D-421): one worker on the `thumbs` queue makes the previews, one at a time, and runs the
+  # background scans of large files. It reaches clamd (scan), the Document Server (office) and the renderer through the
+  # socket volume (render-socket), which only it and the renderer mount.
+  queue-thumbs:
+    <<: *backend
+    command: ["bench", "worker", "--queue", "thumbs"]
+    networks: [default, office, scan]
+    volumes:
+      - core-sites:/home/frappe/frappe-bench/sites
+      - ../apps/construction_core:/home/frappe/frappe-bench/apps/construction_core
+      - ../apps/construction_shell:/home/frappe/frappe-bench/apps/construction_shell
+      - render-socket:/run/renderer:ro  # the worker only connects
+
+  # The renderer (P3-75, design §15.1): it draws previews of hostile bytes, so it has no site data, no host path and no
+  # network at all; the thumbs worker reaches it through a Unix socket on render-socket. Read-only, every capability
+  # dropped, no new privileges, a non-root user, an init that reaps, limits, and a tmpfs for each job's bytes. Built
+  # from deploy/renderer (dev/renderer/README.md); dev/check-renderer.sh proves each of these.
+  renderer:
+    build:
+      context: ..
+      dockerfile: deploy/renderer/Containerfile
+    image: ws-dev/renderer:local
+    user: "10001:10001"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs:
+      - /tmp:size=600m,mode=1777,noexec,nosuid,nodev
+    pids_limit: 64
+    mem_limit: 1536m
+    memswap_limit: 1536m
+    cpus: 1.0
+    environment:
+      RENDER_JOBS: "2"
+      RENDER_CHILD_MEMORY: "1073741824"
+      RENDER_SOCKET: /run/renderer/render.sock
+    network_mode: none
+    init: true
+    volumes:
+      - render-socket:/run/renderer
+    healthcheck:
+      test: ["CMD", "python", "-I", "-c", "import socket; s = socket.socket(socket.AF_UNIX); s.settimeout(3); s.connect('/run/renderer/render.sock')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  frontend:
+    <<: *image
+    command: ["nginx-entrypoint.sh"]
+    environment:
+      BACKEND: backend:8000
+      SOCKETIO: websocket:9000
+      NGINX_LISTEN_PORT: 8080
+      FRAPPE_SITE_NAME_HEADER: dev.localhost
+      CLIENT_MAX_BODY_SIZE: 251m  # P3-75 (D-417): 250 MB model files, as deploy/compose.yml
+    ports:
+      - "${DEV_HTTP_PORT:-9600}:8080"
+    volumes:
+      - core-sites:/home/frappe/frappe-bench/sites
+      # Host keeps the published port, so Frappe's login redirects do not drop :9600 (deploy/nginx/).
+      - ../deploy/nginx/frappe.conf.template:/templates/nginx/frappe.conf.template:ro
+      # Our app's static files (vendored libraries, page scripts) at /assets/construction_core (P1-15).
+      - ../apps/construction_core/construction_core/public:/home/frappe/frappe-bench/assets/construction_core:ro
+      # The shell's static files and its built app at /assets/construction_shell (P2-02, dev/build-shell.sh).
+      - ../apps/construction_shell/construction_shell/public:/home/frappe/frappe-bench/assets/construction_shell:ro
+    networks: [default, office]
+    depends_on:
+      - backend
+      - websocket
+
+  # ONLYOFFICE Document Server 9.4.0.1 Community (P1-17, D-073, D-099): browsers reach it through nginx at /office/;
+  # it reaches the site through the frontend. The office network is internal: no egress (D-082).
+  documentserver:
+    image: onlyoffice/documentserver:9.4.0.1@sha256:3ab6ebc7c605e5a32b7ae3ff19daed4925090245acc8100ce2230bd766c88212
+    environment:
+      JWT_ENABLED: "true"
+      JWT_SECRET: ${ONLYOFFICE_JWT_SECRET:?run dev/up.sh, which writes dev/.env}
+      # Not "Authorization": Frappe would read the Document Server's token as its own API login and answer 401.
+      JWT_HEADER: AuthorizationJwt
+    networks: [office]
+    volumes:
+      - core-office-data:/var/www/onlyoffice/Data
+
+  # ClamAV 1.4 LTS (P3-07, D-159, D-179): clamd scans every file a client sends. It parses hostile files, so it sits on
+  # an internal network that only the backend shares, with no egress (D-082); the updater alone reaches the
+  # signature mirror and shares the database volume. clamd starts once the first signatures are in the volume.
+  clamav-update:
+    image: clamav/clamav:1.4.6_base@sha256:90effb795234e6a93b070310a4bab5a58d93d94b9a077a09ce2229947679782b
+    environment:
+      CLAMAV_NO_CLAMD: "true"
+      CLAMAV_NO_MILTERD: "true"
+      FRESHCLAM_CHECKS: "4"
+    networks: [scan-egress]
+    volumes:
+      - core-clamav-db:/var/lib/clamav
+    healthcheck:
+      test: ["CMD-SHELL", "ls /var/lib/clamav/main.c[lv]d /var/lib/clamav/daily.c[lv]d >/dev/null 2>&1"]
+      start_period: 15m
+      interval: 60s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  clamav:
+    image: clamav/clamav:1.4.6_base@sha256:90effb795234e6a93b070310a4bab5a58d93d94b9a077a09ce2229947679782b
+    # "-" first: the image's entrypoint runs clamd alone and never tries to download signatures here (no egress).
+    command: ["--foreground"]
+    environment:
+      CLAMD_CONF_StreamMaxLength: 251M  # D-417: the upload ceiling (250 MB model files), plus headroom
+      CLAMD_CONF_MaxFileSize: 251M  # clamd's default (100M) would refuse a 250 MB model file as "exceeds max"
+      CLAMD_CONF_MaxScanSize: 1024M  # what it unpacks and scans of one file in all (default 400M)
+      # a 100 MB Office file of photos takes about 50 s (measured): a file above 100 MB is scanned by a background job
+      # (P3-75), so clamd may take longer than a request; a request still waits only what is left of its own 120 s
+      CLAMD_CONF_MaxScanTime: "300000"
+      CLAMD_CONF_AlertExceedsMax: "yes"
+      CLAMD_CONF_AlertEncrypted: "yes"
+      CLAMD_CONF_AlertOLE2Macros: "yes"
+      CLAMD_CONF_SelfCheck: "600"
+    networks: [scan]
+    volumes:
+      - core-clamav-db:/var/lib/clamav
+    depends_on:
+      clamav-update:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "clamdcheck.sh"]
+      start_period: 6m
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # P3-17 (D-214): a mail catcher for the browser suites only. The site sends to it only while the runner's test Email
+  # Account exists (browser_fixtures.mail_on, removed again by mail_off). Never in deploy/compose.yml (verify_pins).
+  mailpit:
+    image: axllent/mailpit:v1.21.8@sha256:81370195cd4a0eab9604d17c2617a7525b0486f9365555253b6c5376c6350f1a
+    restart: unless-stopped
+
+networks:
+  office:
+    internal: true
+  scan:
+    internal: true
+  scan-egress: {}
+
+# P1-21 (D-104): the Frappe-only site lives in new volumes; the ERPNext-era ones (ws-dev_sites, ws-dev_db-data,
+# ws-dev_redis-queue-data, ws-dev_office-data) are kept, untouched, until the owner decides.
+volumes:
+  core-db-data:
+  core-redis-queue-data:
+  core-sites:
+  core-office-data:
+  core-clamav-db:
+  # P3-75: the renderer's socket, a small tmpfs owned by its user; mounted by the renderer and the thumbs worker only
+  render-socket:
+    driver: local
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+      o: "size=1m,uid=10001,gid=10001,mode=0755"

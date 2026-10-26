@@ -1,0 +1,41 @@
+{% extends spa_base or "templates/web.html" %}
+
+{% block title %}{{ _("This was not me") }}{% endblock %}
+
+{% block page_content %}
+{#- P3-78 (approvals design §3.7, M11): the receipt's "This was not me" page. The token stays in the link's fragment, which
+never reaches the server: the page posts it to construction_core.approvals.dispute.view (what was answered; nothing is
+recorded), and the button posts it to dispute.not_me. This is the page without its app (the shell's dispute app draws it
+otherwise, see approval_dispute.py); the button goes once it is used. -#}
+<div style="max-width: 420px; margin: 48px auto; padding: 0 20px">
+<h1>{{ _("This was not me") }}</h1>
+<p id="cc-dispute-text" role="status">{{ _("Checking the link…") }}</p>
+<p id="cc-dispute-next"></p>
+<button id="cc-dispute-confirm" type="button" class="btn btn-primary" hidden>{{ _("This was not me") }}</button>
+</div>
+<script>
+(() => {
+	const token = new URLSearchParams(location.hash.slice(1)).get("t") || "";
+	const text = document.getElementById("cc-dispute-text"), next = document.getElementById("cc-dispute-next");
+	const button = document.getElementById("cc-dispute-confirm");
+	const broken = {{ _("This link does not work. It may have been used already. If you need help, contact the team.") | tojson }};
+	const post = (method) => fetch(`/api/method/construction_core.approvals.dispute.${method}`, {
+		method: "POST",
+		headers: {"Content-Type": "application/json", "X-Frappe-CSRF-Token": (window.frappe && frappe.csrf_token) || ""},
+		body: JSON.stringify({token}),
+	}).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+	post("view").then((found) => {
+		if (!found) { text.textContent = broken; return; }
+		text.textContent = found.message.summary;
+		next.textContent = {{ _("If you did not give this answer, press the button. The team is told at once and your account is signed out everywhere.") | tojson }};
+		button.hidden = false;
+	});
+	button.addEventListener("click", async () => {
+		button.hidden = true;
+		const done = await post("not_me");
+		text.textContent = done ? {{ _("Thank you. We told the team and signed your account out everywhere.") | tojson }} : broken;
+		next.textContent = done ? {{ _("From now on the team does not rely on this approval until it is resolved. The team will contact you.") | tojson }} : "";
+	});
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,99 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "hash",
+ "creation": "2026-10-19 12:00:00.000000",
+ "description": "A reference from a chat message to what it points at, written by the server only (D-418).",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "message",
+  "target_type",
+  "target_name",
+  "project",
+  "audience",
+  "staff_only"
+ ],
+ "fields": [
+  {
+   "fieldname": "message",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Message",
+   "options": "Discuss Message",
+   "read_only": 1,
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "description": "A registered target type (discuss/parts/pointer.py).",
+   "fieldname": "target_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Target Type",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "description": "Data, never a Link: Frappe's dotted selectors must not join through it (D-418).",
+   "fieldname": "target_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Target Name",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "label": "Construction Project",
+   "options": "Construction Project",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "audience",
+   "fieldtype": "Data",
+   "label": "Audience",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "staff_only",
+   "fieldtype": "Check",
+   "label": "Staff Only",
+   "read_only": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-10-19 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Discuss Pointer",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "Construction Manager"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "Construction Staff"
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

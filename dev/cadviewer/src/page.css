@@ -1,0 +1,11 @@
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #212830;
+}
+#canvas {
+  position: absolute;
+  inset: 0;
+}

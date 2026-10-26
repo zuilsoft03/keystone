@@ -1,0 +1,5 @@
+# Shell scripts and container recipes run inside Linux containers: keep them LF on every checkout.
+*.sh            text eol=lf
+Containerfile*  text eol=lf
+# Vendored browser libraries are kept byte-identical to the published builds (VENDOR.md hashes).
+apps/construction_core/construction_core/public/vendor/** -text

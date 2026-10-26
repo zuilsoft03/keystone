@@ -1,0 +1,145 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "format:WB-{project}-{###}",
+ "creation": "2026-10-10 16:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "project",
+  "title",
+  "client_visible",
+  "column_break_1",
+  "version",
+  "last_saved_by",
+  "last_saved_on",
+  "scene_size",
+  "scene"
+ ],
+ "fields": [
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Construction Project",
+   "options": "Construction Project",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "description": "Shown read-only to the project's clients on the portal",
+   "fieldname": "client_visible",
+   "fieldtype": "Check",
+   "label": "Client Visible"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "version",
+   "fieldtype": "Int",
+   "label": "Version",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_saved_by",
+   "fieldtype": "Link",
+   "label": "Last Saved By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_saved_on",
+   "fieldtype": "Datetime",
+   "label": "Last Saved On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "scene_size",
+   "fieldtype": "Int",
+   "label": "Scene Size (bytes)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "scene",
+   "fieldtype": "Long Text",
+   "hidden": 1,
+   "label": "Scene",
+   "read_only": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-10-10 16:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Whiteboard",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Construction Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Construction Staff",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 0,
+   "delete": 0,
+   "email": 0,
+   "export": 0,
+   "print": 0,
+   "read": 1,
+   "report": 0,
+   "role": "Construction Client",
+   "share": 0,
+   "write": 0
+  }
+ ],
+ "show_title_field_in_link": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "title",
+ "track_changes": 0
+}

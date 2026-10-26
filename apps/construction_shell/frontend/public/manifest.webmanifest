@@ -1,0 +1,11 @@
+{
+  "name": "Keystone",
+  "short_name": "Keystone",
+  "description": "The project team's workspace: discussion, files and records.",
+  "start_url": "/workspace/",
+  "scope": "/workspace/",
+  "display": "standalone",
+  "icons": [
+    { "src": "/assets/construction_shell/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "hash",
+ "creation": "2026-10-20 18:00:00.000000",
+ "description": "A file or record a chat message tags (#), written by the server only at the send and read by the server only: cards are drawn per viewer (P3-66, design §3.5).",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "message",
+  "thread",
+  "ref_doctype",
+  "ref_name",
+  "position",
+  "project",
+  "audience",
+  "staff_only"
+ ],
+ "fields": [
+  {
+   "fieldname": "message",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Message",
+   "options": "Discuss Message",
+   "read_only": 1,
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "thread",
+   "fieldtype": "Link",
+   "label": "Thread",
+   "options": "Discuss Thread",
+   "read_only": 1,
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "description": "A registered record type (records/resolve.py RECORD_TYPES).",
+   "fieldname": "ref_doctype",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Ref Type",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "description": "Data, never a Link: Frappe's dotted selectors must not join through it, and the record can be deleted (D-418).",
+   "fieldname": "ref_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Ref Name",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "description": "The n of the #[r:n] token in the message text.",
+   "fieldname": "position",
+   "fieldtype": "Int",
+   "label": "Position",
+   "read_only": 1
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "label": "Construction Project",
+   "options": "Construction Project",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "audience",
+   "fieldtype": "Data",
+   "label": "Audience",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "staff_only",
+   "fieldtype": "Check",
+   "label": "Staff Only",
+   "read_only": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-10-20 18:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Discuss Ref",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

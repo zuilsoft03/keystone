@@ -1,0 +1,5 @@
+<p>Hello{% if name %} {{ name | e }}{% endif %},</p>
+<p>Administrator invited you to make your own account for {% if brand %}{{ brand | e }}{% else %}your firm on {{ product | e }}{% endif %}. It is the account you will use every day, with the rights to manage the firm's settings, its team and its projects.</p>
+<p><a href="{{ link | e }}">Set up your account</a></p>
+<p>This link is for you only and works until {{ expires | e }}. If you weren't expecting this email, you can ignore it.</p>
+{{ credit_html | safe }}

@@ -1,0 +1,179 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "hash",
+ "creation": "2026-10-09 18:54:14.284193",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "project",
+  "title",
+  "audience",
+  "status",
+  "column_break_1",
+  "anchor_doctype",
+  "anchor_name",
+  "room_key",
+  "in_room",
+  "last_message_on",
+  "message_count"
+ ],
+ "fields": [
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Construction Project",
+   "options": "Construction Project",
+   "reqd": 1,
+   "search_index": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title",
+   "reqd": 1
+  },
+  {
+   "default": "Internal",
+   "description": "Internal threads are never visible to clients (D-086)",
+   "fieldname": "audience",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Audience",
+   "options": "Internal\nClient",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "default": "Open",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Open\nResolved\nLocked"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "anchor_doctype",
+   "fieldtype": "Link",
+   "label": "Record Type",
+   "options": "DocType",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "anchor_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Record",
+   "options": "anchor_doctype",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "description": "Set by the server on a room only: <project>|<audience> (D-418). Empty on a thread.",
+   "fieldname": "room_key",
+   "fieldtype": "Data",
+   "label": "Room Key",
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "description": "The room this thread belongs to, set once by the server (D-418). Empty on a room.",
+   "fieldname": "in_room",
+   "fieldtype": "Link",
+   "label": "Room",
+   "options": "Discuss Thread",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "last_message_on",
+   "fieldtype": "Datetime",
+   "label": "Last Message On",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "message_count",
+   "fieldtype": "Int",
+   "label": "Messages",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-19 16:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Discuss Thread",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Construction Manager",
+   "share": 0,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Construction Staff",
+   "share": 0,
+   "write": 1
+  },
+  {
+   "create": 0,
+   "delete": 0,
+   "email": 0,
+   "export": 0,
+   "print": 0,
+   "read": 1,
+   "report": 0,
+   "role": "Construction Client",
+   "share": 0,
+   "write": 0
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "title",
+ "track_changes": 1
+}

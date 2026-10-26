@@ -1,0 +1,178 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "hash",
+ "creation": "2026-10-12 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "email",
+  "full_name",
+  "mobile_no",
+  "company_name",
+  "status",
+  "verified_on",
+  "consent_version",
+  "consent_on",
+  "decided_by",
+  "decided_on",
+  "account",
+  "code_hmac",
+  "code_expires_on",
+  "code_tries",
+  "codes_sent",
+  "verified_until",
+  "proof_hash",
+  "finish_token_hash",
+  "finish_expires_on"
+ ],
+ "fields": [
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Verified Email",
+   "options": "Email",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "label": "Name (as typed)",
+   "length": 140,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "mobile_no",
+   "fieldtype": "Data",
+   "label": "Mobile (as typed)",
+   "length": 40
+  },
+  {
+   "fieldname": "company_name",
+   "fieldtype": "Data",
+   "label": "Company or business (as typed)",
+   "length": 140
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nWaiting\nApproved\nDeclined\nJoined",
+   "default": "Pending",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "verified_on",
+   "fieldtype": "Datetime",
+   "label": "Verified On"
+  },
+  {
+   "fieldname": "consent_version",
+   "fieldtype": "Data",
+   "label": "Privacy Notice Version"
+  },
+  {
+   "fieldname": "consent_on",
+   "fieldtype": "Datetime",
+   "label": "Agreed On"
+  },
+  {
+   "fieldname": "decided_by",
+   "fieldtype": "Link",
+   "label": "Decided By",
+   "options": "User",
+   "ignore_user_permissions": 1
+  },
+  {
+   "fieldname": "decided_on",
+   "fieldtype": "Datetime",
+   "label": "Decided On"
+  },
+  {
+   "fieldname": "account",
+   "fieldtype": "Link",
+   "label": "Account",
+   "options": "User",
+   "ignore_user_permissions": 1
+  },
+  {
+   "fieldname": "code_hmac",
+   "fieldtype": "Data",
+   "label": "Code",
+   "read_only": 1,
+   "hidden": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "code_expires_on",
+   "fieldtype": "Datetime",
+   "label": "Code Expires On",
+   "read_only": 1,
+   "hidden": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "code_tries",
+   "fieldtype": "Int",
+   "label": "Code Tries",
+   "read_only": 1,
+   "hidden": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "codes_sent",
+   "fieldtype": "Int",
+   "label": "Codes Sent",
+   "read_only": 1,
+   "hidden": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "verified_until",
+   "fieldtype": "Datetime",
+   "label": "Verified Until",
+   "read_only": 1,
+   "hidden": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "proof_hash",
+   "fieldtype": "Data",
+   "label": "Proof Hash",
+   "hidden": 1,
+   "read_only": 1,
+   "search_index": 1,
+   "description": "sha256 of the secret check_code gives the person who proved this address (D-220)"
+  },
+  {
+   "fieldname": "finish_token_hash",
+   "fieldtype": "Data",
+   "label": "Finish Link Hash",
+   "search_index": 1,
+   "read_only": 1,
+   "hidden": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "finish_expires_on",
+   "fieldtype": "Datetime",
+   "label": "Finish Link Expires On",
+   "read_only": 1,
+   "hidden": 1,
+   "no_copy": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-10-12 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Access Request",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0,
+ "istable": 1,
+ "editable_grid": 0
+}

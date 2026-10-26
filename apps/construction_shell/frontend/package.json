@@ -1,0 +1,25 @@
+{
+  "name": "construction-shell",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "description": "The Construction Workspace shell (P2-02): Vue 3 + frappe-ui. Every version is exact; package-lock.json pins each package with an integrity hash (D-110).",
+  "scripts": {
+    "build": "vite build"
+  },
+  "dependencies": {
+    "frappe-ui": "1.0.0",
+    "leaflet": "1.9.4",
+    "socket.io-client": "4.8.4",
+    "vue": "3.5.43",
+    "vue-router": "4.6.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "5.2.4",
+    "autoprefixer": "10.6.1",
+    "postcss": "8.5.29",
+    "tailwindcss": "3.4.19",
+    "vite": "5.4.21",
+    "vitest": "3.2.4"
+  }
+}

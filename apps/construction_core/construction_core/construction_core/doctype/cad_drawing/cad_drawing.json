@@ -1,0 +1,158 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "format:DWG-{project}-{###}",
+ "creation": "2026-10-10 18:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "project",
+  "title",
+  "file",
+  "source",
+  "page",
+  "column_break_1",
+  "units",
+  "unit_to_m",
+  "calibrated",
+  "entity_count",
+  "layers",
+  "geometry"
+ ],
+ "fields": [
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Construction Project",
+   "options": "Construction Project",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title",
+   "reqd": 1
+  },
+  {
+   "description": "A DXF export of the drawing (DWG: export as DXF first), or a PDF",
+   "fieldname": "file",
+   "fieldtype": "Attach",
+   "label": "Drawing File",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "source",
+   "fieldtype": "Select",
+   "label": "Source",
+   "options": "DXF\nPDF",
+   "read_only": 1
+  },
+  {
+   "default": "1",
+   "depends_on": "eval:doc.source=='PDF' || /\\.pdf$/i.test(doc.file || '')",
+   "description": "The PDF page to measure (one drawing per page)",
+   "fieldname": "page",
+   "fieldtype": "Int",
+   "label": "Page",
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "units",
+   "fieldtype": "Data",
+   "label": "Drawing Units",
+   "read_only": 1
+  },
+  {
+   "description": "From the DXF $INSUNITS header, or set by calibrating on a known distance (always for a PDF)",
+   "fieldname": "unit_to_m",
+   "fieldtype": "Float",
+   "label": "Metres per Drawing Unit",
+   "precision": "9"
+  },
+  {
+   "fieldname": "calibrated",
+   "fieldtype": "Check",
+   "label": "Calibrated",
+   "read_only": 1
+  },
+  {
+   "fieldname": "entity_count",
+   "fieldtype": "Int",
+   "label": "Elements",
+   "read_only": 1
+  },
+  {
+   "fieldname": "layers",
+   "fieldtype": "Small Text",
+   "label": "Layers",
+   "read_only": 1
+  },
+  {
+   "fieldname": "geometry",
+   "fieldtype": "Long Text",
+   "hidden": 1,
+   "label": "Geometry",
+   "read_only": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-10-10 19:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "CAD Drawing",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Construction Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Construction Staff",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "show_title_field_in_link": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "title",
+ "track_changes": 1
+}

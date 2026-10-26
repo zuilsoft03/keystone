@@ -1,0 +1,22 @@
+[
+  {
+    "name": ["liberation sans", "liberationsans", "arial", "arial narrow", "helvetica", "tahoma", "verdana", "calibri", "segoe ui", "century gothic", "isocpeur", "isocteur", "txt", "simplex", "romans", "romand", "italic", "scripts", "isocp", "isocp2", "isocp3", "isoct", "isoct2", "iso", "iso3098", "standard", "complex", "greeks", "simsun", "gbcbig", "hztxt", "chineset", "bigfont", "extfont", "extfont2"],
+    "file": "LiberationSans-Regular.ttf",
+    "type": "mesh"
+  },
+  {
+    "name": ["liberation serif", "liberationserif", "times new roman", "times", "romanc", "romant", "italicc", "italict", "greekc", "gothice", "gothicg", "gothici"],
+    "file": "LiberationSerif-Regular.ttf",
+    "type": "mesh"
+  },
+  {
+    "name": ["liberation mono", "liberationmono", "courier new", "courier", "consolas", "lucida console", "monotxt"],
+    "file": "LiberationMono-Regular.ttf",
+    "type": "mesh"
+  },
+  {
+    "name": ["noto sans math", "notosansmath", "amgdt", "gdt", "symbol", "symath", "syastro", "symap", "symeteo", "symusic"],
+    "file": "NotoSansMath-Regular.ttf",
+    "type": "mesh"
+  }
+]

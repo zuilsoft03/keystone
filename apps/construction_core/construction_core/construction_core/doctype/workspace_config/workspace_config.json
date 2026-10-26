@@ -1,0 +1,155 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "field:project",
+ "creation": "2026-10-09 18:24:54.179549",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "project",
+  "folder_template",
+  "client_portal_enabled",
+  "archived",
+  "closed_on",
+  "seen_receipts",
+  "sidebar_sections",
+  "folders"
+ ],
+ "fields": [
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Construction Project",
+   "options": "Construction Project",
+   "reqd": 1,
+   "unique": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "folder_template",
+   "fieldtype": "Link",
+   "label": "Folder Template",
+   "options": "Folder Template",
+   "permlevel": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "client_portal_enabled",
+   "fieldtype": "Check",
+   "label": "Client Portal Enabled",
+   "permlevel": 1
+  },
+  {
+   "default": "0",
+   "description": "Archive, never delete (ARCHITECTURE §6.1)",
+   "fieldname": "archived",
+   "fieldtype": "Check",
+   "label": "Archived",
+   "permlevel": 1
+  },
+  {
+   "depends_on": "archived",
+   "description": "Set by Close project. Clients read for 90 days after it (P3-59)",
+   "fieldname": "closed_on",
+   "fieldtype": "Date",
+   "label": "Closed On",
+   "no_copy": 1,
+   "permlevel": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "sidebar_sections",
+   "fieldtype": "Table",
+   "label": "Sections",
+   "options": "Workspace Section",
+   "permlevel": 1
+  },
+  {
+   "description": "Folder path -> File id of the project's folder tree (D-079)",
+   "fieldname": "folders",
+   "fieldtype": "JSON",
+   "label": "Folders",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "Staff see who has read each message in client conversations. Clients never see read state.",
+   "fieldname": "seen_receipts",
+   "fieldtype": "Check",
+   "label": "Show \"seen by\" to the team",
+   "permlevel": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-26 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Workspace Config",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Construction Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Construction Staff",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "role": "System Manager",
+   "permlevel": 1,
+   "read": 1,
+   "write": 1
+  },
+  {
+   "role": "Construction Manager",
+   "permlevel": 1,
+   "read": 1,
+   "write": 1
+  },
+  {
+   "role": "Construction Staff",
+   "permlevel": 1,
+   "read": 1,
+   "write": 0
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

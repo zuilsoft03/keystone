@@ -1,0 +1,369 @@
+# Delivery stack for the deploy profiles (DR-1, D-083, P1-19). The app image is built by deploy/build.sh; every other
+# image is pinned by digest and must match deploy/profiles/<profile>/apps-versions.json (deploy/verify-pins.sh).
+#
+#   MVP (D-099, D-102):  APP_IMAGE=construction-workspace:core-office docker compose -f deploy/compose.yml --profile office up -d
+#   core only:           APP_IMAGE=construction-workspace:core        docker compose -f deploy/compose.yml up -d
+#
+# Only `proxy` publishes ports (HTTPS, and HTTP that redirects). The Document Server sits on an internal network
+# with no route out (D-082) and requires JWT. clamd, which scans every file a client stores (D-159), sits on an internal
+# network too; only its updater reaches the signature mirror. Settings live in an env file outside the repository; see RUNBOOK.md.
+
+name: ${COMPOSE_PROJECT_NAME:-construction-workspace}
+
+x-app: &app
+  image: ${APP_IMAGE:?set APP_IMAGE to the image deploy/build.sh built}
+  volumes:
+    - sites:/home/frappe/frappe-bench/sites
+  networks: [default]
+  restart: unless-stopped
+
+x-backend: &backend
+  <<: *app
+  depends_on:
+    configurator:
+      condition: service_completed_successfully
+
+services:
+  proxy:
+    image: caddy:2.10.2-alpine@sha256:4c6e91c6ed0e2fa03efd5b44747b625fec79bc9cd06ac5235a779726618e530d
+    environment:
+      SITE_NAME: ${SITE_NAME:?set SITE_NAME}
+      TLS_ISSUER: ${TLS_ISSUER:?set TLS_ISSUER to an ACME email, or internal for staging}
+      HTTP_PORT: ${HTTP_PORT:-80}
+      HTTPS_PORT: ${HTTPS_PORT:-443}
+    ports:
+      - "${HTTP_PORT:-80}:${HTTP_PORT:-80}"
+      - "${HTTPS_PORT:-443}:${HTTPS_PORT:-443}"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks: [edge]  # the internet-facing proxy reaches frontend only: not the database, Redis or backend
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:2019/config/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      - frontend
+    restart: unless-stopped
+
+  db:
+    image: mariadb:11.8@sha256:2439dcd7d14010ecd1ff7a4e1c5abe8e208c34fe35290744deeeaac3569043c3
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+      - --max_allowed_packet=256M
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?set DB_ROOT_PASSWORD}
+      MARIADB_AUTO_UPGRADE: "1"
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+  redis-cache:
+    image: redis:7-alpine@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf
+    restart: unless-stopped
+
+  redis-queue:
+    image: redis:7-alpine@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf
+    volumes:
+      - redis-queue-data:/data
+    restart: unless-stopped
+
+  configurator:
+    <<: *app
+    entrypoint: ["bash", "-c"]
+    # P3-76 (bypass-2): templates (print formats, notifications, email templates) render with Frappe's restricted
+    # globals, so none reaches a live Document. The key must be present and the integer 0: a missing key, 1 or the
+    # string "0" leaves them unrestricted. "bench set-config -g disable_render_safe_exec None" deletes it, and a hand edit
+    # can delete it or make it a string; check-staging.sh and restore.sh verify it. Here, so every bench has it,
+    # restore.sh's fresh one too.
+    command:
+      - >
+        ls -1 apps > sites/apps.txt;
+        bench set-config -g db_host db;
+        bench set-config -gp db_port 3306;
+        bench set-config -g redis_cache "redis://redis-cache:6379";
+        bench set-config -g redis_queue "redis://redis-queue:6379";
+        bench set-config -g redis_socketio "redis://redis-queue:6379";
+        bench set-config -gp socketio_port 9000;
+        bench set-config -gp workers '{"thumbs": {"timeout": 900}}';
+        bench set-config -gp disable_render_safe_exec 0;
+    depends_on:
+      db:
+        condition: service_healthy
+      redis-cache:
+        condition: service_started
+      redis-queue:
+        condition: service_started
+    restart: on-failure
+
+  backend:
+    <<: *backend
+    # office: the office callback fetches the edited file from http://documentserver. scan: each file a client stores
+    # is sent to clamd first (P3-07). No depends_on: until clamd is up, client files are refused, nothing else waits.
+    networks:
+      default:
+        aliases: [cc-backend]
+      office: {}
+      scan: {}
+    environment:
+      # gunicorn trusts X-Forwarded-Proto only from these addresses; the backend is reachable only on the compose
+      # network, behind frontend and proxy, so Frappe sees HTTPS (Secure cookies, https links).
+      FORWARDED_ALLOW_IPS: "*"
+    # P3-10 (approvals §4.7): Frappe believes any X-Forwarded-For, so gunicorn listens on the default network's address
+    # only (the alias cc-backend exists there alone). The Document Server and clamd share the office and scan networks
+    # with this service but cannot open port 8000; no address found means no start, never a bind to every interface.
+    command:
+      - bash
+      - -c
+      - >
+        ip=$$(getent hosts cc-backend | awk '{print $$1; exit}'); [ -n "$$ip" ] || { echo "no cc-backend address" >&2; exit 1; };
+        exec /home/frappe/frappe-bench/env/bin/gunicorn --chdir=/home/frappe/frappe-bench/sites --bind="$$ip:8000"
+        --threads=4 --workers=2 --worker-class=gthread --worker-tmp-dir=/dev/shm --timeout=120 --preload frappe.app:application
+    # P3-75 (G7): parsing one 250 MB upload takes about 1.3 GB in a web worker (Frappe reads the whole form); two
+    # workers of four threads each. 4 GB holds the site and two large uploads at once (client_files.large_slot);
+    # beyond it the kernel ends a worker, which gunicorn starts again, rather than the server running out of memory.
+    mem_limit: 4g
+    memswap_limit: 4g
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -o /dev/null -H 'X-Frappe-Site-Name: ${SITE_NAME}' http://cc-backend:8000/api/method/ping"]
+      start_period: 60s
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  websocket:
+    <<: *backend
+    command: ["node", "/home/frappe/frappe-bench/apps/frappe/socketio.js"]
+    networks: [default, realtime]
+
+  queue-short:
+    <<: *backend
+    command: ["bench", "worker", "--queue", "short,default"]
+
+  queue-long:
+    <<: *backend
+    command: ["bench", "worker", "--queue", "long,default,short"]
+
+  # P3-75 (design §15.1, D-416, QP-1): one worker on the `thumbs` queue makes previews, one at a time, and runs the
+  # background scans of large files. It reaches clamd (scan), the Document Server (office) and the renderer through the
+  # socket volume (render-socket), which only it and the renderer mount.
+  queue-thumbs:
+    <<: *backend
+    command: ["bench", "worker", "--queue", "thumbs"]
+    networks: [default, office, scan]
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+      - render-socket:/run/renderer:ro  # the worker only connects
+
+  # The renderer (P3-75, design §15.1, D-416): it draws previews of hostile bytes, so it has no site data, no host path
+  # and no network at all: the thumbs worker reaches it through a Unix socket on render-socket, a tmpfs volume only the
+  # two of them mount (so the host's own network stack is out of reach whatever the server). Read-only, every
+  # capability dropped, no new privileges, a non-root user, an init that reaps, pids, memory and CPU limits, and a tmpfs
+  # for each job's bytes. Each job runs in a
+  # `python -I` child with its own limits and a wall clock (deploy/renderer/). deploy/build.sh builds its image from
+  # this repository (the stack's pinned Python base, its wheels by hash), so starting the stack pulls nothing for it.
+  # dev/check-renderer.sh proves the same settings on the dev stack. Memory: a job's child is held to 1 GiB (G2); the
+  # tmpfs holds one input.
+  renderer:
+    image: ${RENDERER_IMAGE:?set RENDERER_IMAGE to the image deploy/build.sh built}
+    user: "10001:10001"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs:
+      - /tmp:size=300m,mode=1777,noexec,nosuid,nodev
+    pids_limit: 64
+    mem_limit: 1536m
+    memswap_limit: 1536m
+    cpus: 1.0
+    environment:
+      RENDER_JOBS: "1"
+      RENDER_CHILD_MEMORY: "1073741824"
+      RENDER_SOCKET: /run/renderer/render.sock
+    network_mode: none
+    init: true
+    volumes:
+      - render-socket:/run/renderer
+    healthcheck:
+      test: ["CMD", "python", "-I", "-c", "import socket; s = socket.socket(socket.AF_UNIX); s.settimeout(3); s.connect('/run/renderer/render.sock')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  scheduler:
+    <<: *backend
+    command: ["bench", "schedule"]
+
+  frontend:
+    <<: *app
+    command: ["nginx-entrypoint.sh"]
+    environment:
+      BACKEND: cc-backend:8000  # the backend's default-network alias, where gunicorn listens
+      SOCKETIO: websocket:9000
+      NGINX_LISTEN_PORT: 8080
+      FRAPPE_SITE_NAME_HEADER: ${SITE_NAME:?set SITE_NAME}
+      # Only the proxy's X-Forwarded-For is believed: the edge network holds the proxy and this service alone. A forged
+      # header from the Document Server or a worker is ignored and their own address is logged (approvals §4.7).
+      UPSTREAM_REAL_IP_ADDRESS: ${EDGE_SUBNET:-198.18.240.0/28}
+      UPSTREAM_REAL_IP_HEADER: X-Forwarded-For
+      CLIENT_MAX_BODY_SIZE: 251m  # the same limit as the proxy's: 250 MB model files (D-417), plus the form
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+      - ./nginx/frappe.conf.template:/templates/nginx/frappe.conf.template:ro
+    networks:
+      default: {}
+      edge: {}
+      office: {}
+      realtime:
+        # The realtime server authenticates a browser by calling http://<site>:8080 (nginx/frappe.conf.template).
+        # On this network, shared with websocket only, the site name resolves to this service, so that call stays
+        # inside the stack; elsewhere (backend printing PDFs, say) the site name keeps its public address.
+        aliases: ["${SITE_NAME}"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -o /dev/null http://127.0.0.1:8080/api/method/ping"]
+      start_period: 30s
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      - backend
+      - websocket
+
+  backup:
+    <<: *backend
+    # deploy/backup.sh: database, files and site config (bench backup), the frozen approval copies (approvals.tar), the Document Server's data, checksums.
+    entrypoint: ["bash", "/usr/local/bin/cw-backup.sh", "--loop"]
+    user: root  # reads the Document Server's data (root-only files); bench runs as frappe (backup.sh)
+    environment:
+      SITE_NAME: ${SITE_NAME:?set SITE_NAME}
+      BACKUP_EVERY_HOURS: ${BACKUP_EVERY_HOURS:-24}
+      BACKUP_KEEP: ${BACKUP_KEEP:-14}
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+      - office-data:/office-data:ro
+      - ${BACKUP_DIR:?set BACKUP_DIR to a host folder for backups}:/backups
+      # P2-01 (D-103, D-107): the off-host destination, the NAS share mounted on the host (RUNBOOK §10). rslave: a
+      # share mounted on the host after this container started is seen here too, not the empty folder beneath it.
+      - type: bind
+        source: ${OFFSITE_DIR:?set OFFSITE_DIR to the mounted NAS folder for off-host backup copies}
+        target: /offsite
+        bind:
+          propagation: rslave
+      - ./backup.sh:/usr/local/bin/cw-backup.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "find /backups -maxdepth 1 -name '20*' -newermt '-26 hours' | grep -q ."]
+      start_period: 10m
+      interval: 10m
+      timeout: 10s
+      retries: 1
+
+  documentserver:
+    profiles: ["office"]
+    image: onlyoffice/documentserver:9.4.0.1@sha256:3ab6ebc7c605e5a32b7ae3ff19daed4925090245acc8100ce2230bd766c88212
+    environment:
+      JWT_ENABLED: "true"
+      JWT_SECRET: ${ONLYOFFICE_JWT_SECRET:?set ONLYOFFICE_JWT_SECRET for the office profiles}
+      # Not "Authorization": Frappe would read the Document Server's token as its own API login and answer 401.
+      JWT_HEADER: AuthorizationJwt
+    networks: [office]
+    volumes:
+      - office-data:/var/www/onlyoffice/Data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1/healthcheck | grep -q true"]
+      start_period: 120s
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # ClamAV 1.4 LTS (P3-07; D-159, D-179, D-182): clamd parses hostile files, so it has no egress; the updater alone
+  # reaches database.clamav.net and shares the signature volume. clamd starts once the first signatures are in it.
+  # About 1 GiB at rest and 2 GiB during a signature reload (measured, P3-07 journal).
+  clamav-update:
+    image: clamav/clamav:1.4.6_base@sha256:90effb795234e6a93b070310a4bab5a58d93d94b9a077a09ce2229947679782b
+    environment:
+      CLAMAV_NO_CLAMD: "true"
+      CLAMAV_NO_MILTERD: "true"
+      FRESHCLAM_CHECKS: "4"
+    networks: [scan-egress]
+    volumes:
+      - clamav-db:/var/lib/clamav
+    healthcheck:
+      test: ["CMD-SHELL", "ls /var/lib/clamav/main.c[lv]d /var/lib/clamav/daily.c[lv]d >/dev/null 2>&1"]
+      start_period: 15m
+      interval: 60s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  clamav:
+    image: clamav/clamav:1.4.6_base@sha256:90effb795234e6a93b070310a4bab5a58d93d94b9a077a09ce2229947679782b
+    # "-" first: the image's entrypoint runs clamd alone and never tries to download signatures here (no egress).
+    command: ["--foreground"]
+    environment:
+      CLAMD_CONF_StreamMaxLength: 251M  # D-417: the upload ceiling (250 MB model files), plus headroom
+      CLAMD_CONF_MaxFileSize: 251M  # clamd's default (100M) would refuse a 250 MB model file as "exceeds max"
+      CLAMD_CONF_MaxScanSize: 1024M  # what it unpacks and scans of one file in all (default 400M)
+      # a 100 MB Office file of photos takes about 50 s (measured): a file above 100 MB is scanned by a background job
+      # (P3-75), so clamd may take longer than a request; a request still waits only what is left of its own 120 s
+      CLAMD_CONF_MaxScanTime: "300000"
+      CLAMD_CONF_AlertExceedsMax: "yes"
+      CLAMD_CONF_AlertEncrypted: "yes"
+      CLAMD_CONF_AlertOLE2Macros: "yes"
+      CLAMD_CONF_SelfCheck: "600"
+    networks: [scan]
+    volumes:
+      - clamav-db:/var/lib/clamav
+    depends_on:
+      clamav-update:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "clamdcheck.sh"]
+      start_period: 6m
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+networks:
+  default:  # the app's own services, the database and Redis; nothing here is published
+  edge:  # proxy <-> frontend
+    # A fixed subnet, so nginx can trust it alone: 198.18.0.0/15 is reserved for benchmarking (RFC 2544), outside
+    # Docker's own pools and office ranges (10/8, 172.16/12, 192.168/16). Set EDGE_SUBNET if it clashes (RUNBOOK §12).
+    ipam:
+      config:
+        - subnet: ${EDGE_SUBNET:-198.18.240.0/28}
+  realtime:  # websocket <-> frontend, for the realtime server's authentication call
+    internal: true
+  office:
+    internal: true  # no egress (D-082)
+  scan:
+    internal: true  # backend <-> clamd, no egress (D-082)
+  scan-egress:  # the signature updater only
+
+volumes:
+  db-data:
+  redis-queue-data:
+  sites:
+  office-data:
+  clamav-db:
+  caddy-data:
+  caddy-config:
+  # P3-75: the renderer's socket, a small tmpfs owned by its user; mounted by the renderer and the thumbs worker only
+  render-socket:
+    driver: local
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+      o: "size=1m,uid=10001,gid=10001,mode=0755"

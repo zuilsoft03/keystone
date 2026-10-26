@@ -1,0 +1,78 @@
+{
+ "actions": [],
+ "creation": "2026-10-26 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "issingle": 1,
+ "field_order": [
+  "brand_section",
+  "company_name",
+  "logo",
+  "main_colour",
+  "panel_colour",
+  "heading_font",
+  "signin_picture"
+ ],
+ "fields": [
+  {
+   "fieldname": "brand_section",
+   "fieldtype": "Section Break",
+   "label": "Brand",
+   "description": "P3-45 (D-300): the firm's brand, set on the Brand page. Empty fields keep Keystone's. The \"Powered by Keystone\" credit always shows once a firm's name leads (D-404)."
+  },
+  {
+   "fieldname": "company_name",
+   "fieldtype": "Data",
+   "label": "Company name",
+   "length": 80
+  },
+  {
+   "fieldname": "logo",
+   "fieldtype": "Data",
+   "label": "Logo",
+   "read_only": 1,
+   "description": "Uploaded on the Brand page only."
+  },
+  {
+   "fieldname": "main_colour",
+   "fieldtype": "Data",
+   "label": "Main colour",
+   "description": "#RRGGBB; white text on it, and on its hover and press shades, must reach 4.5:1."
+  },
+  {
+   "fieldname": "panel_colour",
+   "fieldtype": "Data",
+   "label": "Brand panel colour",
+   "description": "#RRGGBB; white text on it must reach 4.5:1."
+  },
+  {
+   "fieldname": "heading_font",
+   "fieldtype": "Select",
+   "label": "Heading font",
+   "options": "\narchivo\nbarlow-semi-condensed\nmanrope\nibm-plex-sans"
+  },
+  {
+   "fieldname": "signin_picture",
+   "fieldtype": "Data",
+   "label": "Default sign-in picture",
+   "read_only": 1,
+   "description": "Uploaded on the Brand page only; shown when no project render is marked."
+  }
+ ],
+ "links": [],
+ "modified": "2026-10-26 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Brand Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

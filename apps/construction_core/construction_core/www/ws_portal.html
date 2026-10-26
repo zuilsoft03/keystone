@@ -1,0 +1,150 @@
+{% extends portal_base or "templates/web.html" %}
+
+{% block title %}{{ title | e }}{% endblock %}
+
+{% block page_content %}
+<style>
+  .ccp { max-width: 960px; margin: 0 auto; padding: 16px; }
+  .ccp h1 { font-size: 1.6rem; margin-bottom: 4px; }
+  .ccp h2 { font-size: 1.15rem; margin: 28px 0 8px; border-bottom: 1px solid var(--border-color, #ddd); padding-bottom: 4px; }
+  .ccp table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+  .ccp td, .ccp th { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border-color, #eee); vertical-align: top; }
+  .ccp .muted { color: var(--text-muted, #777); }
+  .ccp .pill { display: inline-block; padding: 1px 8px; border-radius: 10px; background: var(--bg-gray, #f0f0f0); font-size: 0.8rem; }
+  .ccp .thread { border: 1px solid var(--border-color, #ddd); border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+  .ccp .msg { margin: 6px 0; white-space: pre-wrap; }
+  .ccp textarea { width: 100%; min-height: 60px; margin-top: 8px; }
+  .ccp .table-wrap { overflow-x: auto; }
+  .ccp .chat-msgs { max-height: 420px; overflow-y: auto; padding: 4px 0; display: flex; flex-direction: column; gap: 6px; }
+  .ccp .bubble { max-width: 80%; align-self: flex-start; background: var(--bg-gray, #f2f2f2); border-radius: 12px; padding: 6px 10px; }
+  .ccp .bubble.mine { align-self: flex-end; background: var(--blue-50, #e8f1ff); }
+  .ccp .bubble .who { font-size: 0.8rem; font-weight: 600; }
+  .ccp .bubble .txt { white-space: pre-wrap; word-break: break-word; }
+</style>
+<div class="ccp">
+{% if view == "home" %}
+  <h1>Your projects</h1>
+  {% if projects %}
+  <ul>
+    {% for p in projects %}
+    <li><a href="/portal/{{ p.name | urlencode }}">{{ (p.project_name or p.name) | e }}</a>
+      <span class="pill">{{ (p.cc_phase or p.status or "") | e }}</span></li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="muted">You have no projects yet.</p>
+  {% endif %}
+
+{% elif view == "project" %}
+  <p><a href="/portal">&larr; Your projects</a></p>
+  <h1>{{ (project.project_name or project.name) | e }}</h1>
+  <p class="muted">{{ (project.cc_phase or project.status or "") | e }}</p>
+
+  {% if "files" not in sections_off %}
+  <h2>Files</h2>
+  {% if files %}<div class="table-wrap"><table>
+    {% for f in files %}<tr><td><a href="{{ f.file_url | e }}" download>{{ f.file_name | e }}</a></td></tr>{% endfor %}
+  </table></div>{% else %}<p class="muted">No shared files.</p>{% endif %}
+  {% endif %}
+
+  {% if "documents" not in sections_off %}
+  <h2>Documents</h2>
+  {% if documents %}<div class="table-wrap"><table>
+    <tr><th>Number</th><th>Revision</th><th>Title</th></tr>
+    {% for d in documents %}<tr><td>{{ d.document_number | e }}</td><td>{{ d.revision | e }}</td><td>{{ d.title | e }}</td></tr>{% endfor %}
+  </table></div>{% else %}<p class="muted">No published documents.</p>{% endif %}
+  {% endif %}
+
+  {% if "rfi" not in sections_off %}
+  <h2>RFIs</h2>
+  {% if rfis %}<div class="table-wrap"><table>
+    <tr><th>RFI</th><th>Subject</th><th>Status</th><th>Response</th></tr>
+    {% for r in rfis %}<tr><td>{{ r.name | e }}</td><td>{{ r.subject | e }}</td><td><span class="pill">{{ r.status | e }}</span></td><td>{{ (r.response or "") | e }}</td></tr>{% endfor %}
+  </table></div>{% else %}<p class="muted">No RFIs.</p>{% endif %}
+  {% endif %}
+
+  {% if "submittals" not in sections_off %}
+  <h2>Submittals</h2>
+  {% if submittals %}<div class="table-wrap"><table>
+    <tr><th>Submittal</th><th>Title</th><th>Revision</th><th>Status</th></tr>
+    {% for s in submittals %}<tr><td>{{ s.name | e }}</td><td>{{ s.title | e }}</td><td>{{ s.current_revision or "" }}</td><td><span class="pill">{{ s.status | e }}</span></td></tr>{% endfor %}
+  </table></div>{% else %}<p class="muted">No submittals.</p>{% endif %}
+  {% endif %}
+
+  {% if "variations" not in sections_off %}
+  <h2>Variations</h2>
+  {% if variations %}<div class="table-wrap"><table>
+    <tr><th>Variation</th><th>Title</th><th>Stage</th><th>Amount</th></tr>
+    {% for v in variations %}<tr><td>{{ v.name | e }}</td><td>{{ v.title | e }}</td><td><span class="pill">{{ v.stage | e }}</span></td><td>{{ v.amount | e }}</td></tr>{% endfor %}
+  </table></div>{% else %}<p class="muted">No variations.</p>{% endif %}
+  {% endif %}
+
+  {% if "whiteboards" not in sections_off %}
+  <h2>Canvas</h2>
+  {% if whiteboards %}<ul>
+    {% for b in whiteboards %}<li><a href="/portal/{{ project.name | urlencode }}/whiteboard/{{ b.name | urlencode }}">{{ b.title | e }}</a></li>{% endfor %}
+  </ul>{% else %}<p class="muted">Nothing shared on the canvas yet.</p>{% endif %}
+  {% endif %}
+
+  {% if "discuss" not in sections_off %}
+  {#- P3-64 (R-32, D-358): this page's own conversation is retired. The discussion is the portal app's one timeline
+      with its threads; the link keeps an old link's thread. -#}
+  <h2>Discussion</h2>
+  {% if discussion_link %}
+  <p data-discussion-link><a class="btn btn-primary btn-sm" href="{{ discussion_link | e }}">Open the discussion</a></p>
+  {% elif room %}
+  <div class="chat-msgs" data-room-messages>
+  {% for m in room.messages[-20:] %}
+    <div class="bubble{% if m.author == user %} mine{% endif %}"><div class="who">{{ m.author_name | e }} <span class="muted">{{ m.when | e }}</span></div><div class="txt">{{ m.text | e }}</div></div>
+  {% else %}<p class="muted">No messages yet.</p>{% endfor %}
+  </div>
+  {% endif %}
+  {% endif %}
+
+{% elif view == "board" %}
+  <p><a href="/portal/{{ project.name | urlencode }}">&larr; {{ (project.project_name or project.name) | e }}</a></p>
+  <h1>{{ board.title | e }}</h1>
+  <div id="cc-board" data-board="{{ board.name | e }}" style="height: 70vh; border: 1px solid var(--border-color, #ddd); border-radius: 8px;"></div>
+  <script src="/assets/construction_core/js/whiteboard_loader.js"></script>
+  <script>
+  (function () {
+    var el = document.getElementById("cc-board");
+    var name = el.dataset.board, root = null, api = null, version = -1;
+    function fetchBoard() {
+      return fetch("/api/method/construction_core.whiteboard.api.load?name=" + encodeURIComponent(name), { headers: { "Accept": "application/json" } })
+        .then(function (r) { return r.json(); }).then(function (r) { return r.message; });
+    }
+    Promise.all([window.ccWhiteboard.load(), fetchBoard()]).then(function (res) {
+      var lib = res[0], b = res[1]; version = b.version;
+      root = ReactDOM.createRoot(el);
+      root.render(React.createElement(lib.Excalidraw, {
+        initialData: { elements: b.scene.elements || [], appState: b.scene.appState || {}, files: b.scene.files || {} },
+        viewModeEnabled: true, zenModeEnabled: true,
+        excalidrawAPI: function (a) { api = a; },
+        UIOptions: { canvasActions: { loadScene: false, saveToActiveFile: false, export: false, toggleTheme: true } },
+      }));
+    });
+    // Live: a new version arrives in this user's own room (D-100); register after Frappe has made the socket.
+    frappe.ready(function () {
+      setTimeout(function () {
+        if (!frappe.realtime || !frappe.realtime.socket) return;
+        frappe.realtime.on("cc_whiteboard_saved", function (d) {
+          if (d.name !== name || d.version <= version || !api) return;
+          fetchBoard().then(function (b) {
+            version = b.version;
+            api.updateScene({ elements: b.scene.elements || [], appState: b.scene.appState || {} });
+            if (b.scene.files) api.addFiles(Object.values(b.scene.files));
+          });
+        });
+      }, 0);
+    });
+  })();
+  </script>
+
+{% else %}
+  <h1>Page not found</h1>
+  <p>This page does not exist, or you do not have access to it.</p>
+  <p><a href="/portal">Your projects</a></p>
+{% endif %}
+</div>
+{% endblock %}

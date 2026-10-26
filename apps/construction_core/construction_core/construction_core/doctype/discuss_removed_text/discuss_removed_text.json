@@ -1,0 +1,124 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "hash",
+ "creation": "2026-10-21 12:00:00.000000",
+ "description": "What a removed chat message said (P3-68, D-388): its text, mentions, earlier texts and tags, for System Managers only.",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "message",
+  "thread",
+  "content",
+  "mentions",
+  "versions",
+  "refs",
+  "removed_by",
+  "removed_on",
+  "project",
+  "audience",
+  "staff_only"
+ ],
+ "fields": [
+  {
+   "fieldname": "message",
+   "fieldtype": "Link",
+   "label": "Message",
+   "read_only": 1,
+   "options": "Discuss Message",
+   "reqd": 1,
+   "search_index": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "thread",
+   "fieldtype": "Link",
+   "label": "Thread",
+   "read_only": 1,
+   "options": "Discuss Thread",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "content",
+   "fieldtype": "Long Text",
+   "label": "Text",
+   "read_only": 1
+  },
+  {
+   "fieldname": "mentions",
+   "fieldtype": "Small Text",
+   "label": "Mentions",
+   "read_only": 1
+  },
+  {
+   "fieldname": "versions",
+   "fieldtype": "Long Text",
+   "label": "Earlier Texts",
+   "read_only": 1,
+   "description": "JSON of the Discuss Message Version rows it had."
+  },
+  {
+   "fieldname": "refs",
+   "fieldtype": "Long Text",
+   "label": "Tags",
+   "read_only": 1,
+   "description": "JSON [[position, type, name]]."
+  },
+  {
+   "fieldname": "removed_by",
+   "fieldtype": "Link",
+   "label": "Removed By",
+   "read_only": 1,
+   "options": "User"
+  },
+  {
+   "fieldname": "removed_on",
+   "fieldtype": "Datetime",
+   "label": "Removed On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Construction Project",
+   "read_only": 1,
+   "options": "Construction Project",
+   "ignore_user_permissions": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "audience",
+   "fieldtype": "Data",
+   "label": "Audience",
+   "read_only": 1
+  },
+  {
+   "fieldname": "staff_only",
+   "fieldtype": "Check",
+   "label": "Staff Only",
+   "read_only": 1,
+   "default": "0"
+  }
+ ],
+ "links": [],
+ "modified": "2026-10-21 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Discuss Removed Text",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

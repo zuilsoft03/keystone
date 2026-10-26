@@ -1,0 +1,49 @@
+{#- P3-81 (approvals design §3.6, §4.6): the evidence PDF of an answered request. The chained part holds no personal
+data; `personal` (managers' copy, never stored) adds the last page. Print CSS only, system font, no outside file. -#}
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Evidence: {{ title | e }}</title>
+<style>
+@page { size: A4; margin: 18mm 16mm; @bottom-right { content: counter(page) " / " counter(pages); font-size: 8pt; color: #6b6b6b; } }
+body { font-family: "DejaVu Sans", sans-serif; font-size: 9.5pt; line-height: 1.45; color: #171717; }
+h1 { font-size: 16pt; margin: 0 0 2mm; } h2 { font-size: 11pt; margin: 6mm 0 2mm; border-bottom: 1px solid #e2e2e2; padding-bottom: 1mm; }
+.quiet { color: #6b6b6b; } table { width: 100%; border-collapse: collapse; } td, th { text-align: left; padding: 1mm 2mm 1mm 0; vertical-align: top; }
+th { color: #6b6b6b; font-weight: normal; width: 34mm; } .code { font-family: "DejaVu Sans Mono", monospace; font-size: 7.5pt; word-break: break-all; }
+.line { padding: 3mm; border: 1px solid #e2e2e2; border-radius: 2mm; } img { max-width: 80mm; border: 1px solid #e2e2e2; }
+.page { page-break-before: always; }
+</style></head><body>
+<h1>{{ title | e }}</h1>
+<div class="quiet">{{ reference | e }} · {{ project | e }}</div>
+
+<h2>The answer</h2>
+<table>
+<tr><th>Answer</th><td>{{ answer | capitalize | e }}</td></tr>
+{% if option %}<tr><th>Option chosen</th><td>{{ option | e }}</td></tr>{% endif %}
+{% if reason %}<tr><th>Reason</th><td>{{ reason | e }}</td></tr>{% endif %}
+<tr><th>By</th><td>{{ decider | e }}</td></tr>
+<tr><th>Time</th><td>{{ when | e }}</td></tr>
+<tr><th>Chain position</th><td>{{ seq | e }}</td></tr>
+<tr><th>Chain hash</th><td class="code">{{ hash | e }}</td></tr>
+</table>
+
+<h2>What was shown</h2>
+<table>{% for k, v in terms %}<tr><th>{{ k | capitalize | e }}</th><td>{{ v | e }}</td></tr>{% endfor %}</table>
+{% if options %}<table>{% for o in options %}<tr><th>{{ o.label | e }}</th><td>{{ o.cost_difference | e }} · {{ o.time_difference | e }} days</td></tr>{% endfor %}</table>{% endif %}
+<p class="line">{{ line | e }}</p>
+{% if files %}<table>{% for f in files %}<tr><th>{{ f.name | e }}</th><td class="code">{{ f.sha256 | e }}</td></tr>{% endfor %}</table>{% endif %}
+
+<h2>Events of this request</h2>
+<table>{% for x in events %}<tr><td>{{ x.seq | e }}</td><td>{{ x.kind | e }}</td><td class="quiet">{{ x.at | e }}</td><td>{{ x.who | e }}</td></tr>{% endfor %}</table>
+
+{% if personal %}
+<div class="page"><h1>Personal page</h1><div class="quiet">For managers only. Not stored and not part of the chain.</div>
+<table>
+<tr><th>Network address</th><td>{{ personal.network_address | e }} {{ personal.ip_trust | e }}</td></tr>
+<tr><th>Peer</th><td>{{ personal.wsgi_peer | e }}</td></tr>
+<tr><th>Browser</th><td>{{ personal.browser | e }}, {{ personal.system | e }}</td></tr>
+<tr><th>Device report</th><td>{{ personal.user_agent | e }}</td></tr>
+<tr><th>Location</th><td>{% if personal.location %}{{ personal.location | tojson | e }}{% else %}none given{% endif %}</td></tr>
+</table>
+{% if personal.signature %}<h2>Signature</h2><img src="{{ personal.signature }}" alt="Signature">{% endif %}
+</div>
+{% endif %}
+</body></html>

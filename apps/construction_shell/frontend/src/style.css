@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* P3-44 (D-298; docs/design/brand.md): the wordmark's face, Archivo with its width axis (62 to 125) and weight axis
+   (100 to 900), self-hosted: the site is on-premise and loads no font from the internet (licence beside the file). */
+@font-face {
+  font-family: 'Archivo';
+  src: url('./assets/fonts/archivo-latin-wdth-normal.woff2') format('woff2');
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* P3-45 (D-300, D-467): the other heading faces a firm may pick on the Brand page, one heavy weight each (the wordmark asks
+   for 800; Plex's heaviest is 700), self-hosted with their licences beside them. */
+@font-face {
+  font-family: 'Barlow Semi Condensed';
+  src: url('./assets/fonts/barlow-semi-condensed-latin-800-normal.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Manrope';
+  src: url('./assets/fonts/manrope-latin-800-normal.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: url('./assets/fonts/ibm-plex-sans-latin-700-normal.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* P3-45: a firm's brand, as custom properties that brand.js sets from validated values only (a six-digit hex, a key of a fixed
+   font map). The main colour takes the design system's blue where buttons and links use it: base, hover and press (the
+   server derives the shades and guarantees white text on it, so the same colour serves both themes). A solid button's text is
+   the theme's ink-base, which is dark in the dark theme, so on the firm's colour it is set to white. The sign-in panel and
+   the portal header take --brand-panel in their own templates. */
+:is(html, .cw-brand-scope)[data-brand-main] {
+  --surface-blue-6: var(--brand-main);
+  --surface-blue-7: var(--brand-main-hover);
+  --surface-blue-8: var(--brand-main-press);
+}
+:is(html, .cw-brand-scope)[data-brand-main]:not([data-theme="dark"]) { --ink-blue-link: var(--brand-main); }
+:is(html, .cw-brand-scope)[data-brand-main] .bg-surface-blue-6.text-ink-base { color: white; }
+.cw-brand-font { font-family: var(--brand-heading, inherit); }
+/* a bar the firm's panel colour paints: its text and lines read on a dark ground in both themes */
+.cw-panel-bar {
+  background: var(--brand-panel);
+  --ink-gray-9: white; --ink-gray-8: white; --ink-gray-7: oklch(1 0 0 / 0.78); --ink-blue-8: white;
+  --outline-blue-6: white; --outline-gray-2: oklch(1 0 0 / 0.2); --outline-gray-3: oklch(1 0 0 / 0.3);
+  --surface-gray-3: oklch(1 0 0 / 0.16); --surface-gray-2: oklch(1 0 0 / 0.1);
+}
+
+/* The page takes frappe-ui's base: InterVar at its regular weight, 14px, on the page surface (design system, D-125).
+   Every colour is a theme token, so the dark theme (D-126) needs nothing here. */
+html, body, #app { height: 100%; }
+body {
+  @apply m-0 bg-surface-gray-1 text-base text-ink-gray-9;
+}
+
+/* The design system's surfaces (live, D-125, version 1791643947-f26b): its static card, list and pill-tab classes,
+   written here with frappe-ui's own tokens so they follow the theme. Buttons, badges, avatars, inputs, switches and
+   dialogs are frappe-ui's Vue components instead. */
+@layer components {
+  /* The product name beside mark B: Archivo at width 112, weight 800 (BrandMark.vue). */
+  .cw-wordmark { font-family: var(--brand-heading, 'Archivo'), 'InterVar', ui-sans-serif, system-ui, sans-serif; font-weight: 800; font-stretch: 112%; line-height: 1.1; letter-spacing: 0; }
+  .cw-card { @apply rounded-6 border border-outline-gray-1 bg-surface-base; }
+  .cw-card-header { @apply flex min-h-[44px] items-center gap-2 border-b border-outline-gray-1 px-4 py-2; }
+  .cw-card-title { @apply m-0 text-base font-semibold text-ink-gray-9; }
+  .cw-list-row { @apply flex min-h-10 items-center gap-3 border-t border-outline-gray-1 px-4 py-2 text-ink-gray-8 no-underline hover:bg-surface-gray-1; }
+  .cw-list-head { @apply flex min-h-8 items-center gap-3 bg-surface-gray-1 px-4 text-sm text-ink-gray-7; }
+  .cw-label { @apply text-[11px] font-semibold uppercase tracking-[0.06em] text-ink-gray-6; }
+  .cw-tabbuttons { @apply inline-flex gap-0.5 rounded-4 bg-surface-gray-2 p-0.5; }
+  .cw-tabbutton { @apply inline-flex h-6 items-center gap-1.5 rounded-3 px-2 text-sm text-ink-gray-7 hover:text-ink-gray-9; }
+  .cw-tabbutton[aria-selected="true"], .cw-tabbutton[aria-pressed="true"] { @apply bg-surface-base text-ink-gray-9 shadow-sm; }
+}
+
+/* P3-80: the staff approval dialogs on a phone keep their buttons in view. The dialog is as tall as the screen at most; its
+   body scrolls and the actions stay at the foot. The close X is a 48 px target. */
+@media (max-width: 767px) {
+  .dialog-content:has(.staff-dialog) { display: flex; flex-direction: column; max-height: calc(100dvh - 5rem); }
+  .dialog-content:has(.staff-dialog) > :first-child { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+  .dialog-content:has(.staff-dialog) > [data-slot="actions"] { flex: none; }
+  .dialog-content:has(.staff-dialog) button[aria-label="Close"] { min-width: 48px; min-height: 48px; }
+}

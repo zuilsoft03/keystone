@@ -1,0 +1,15 @@
+# Build context of deploy/Containerfile.pinned is the repo root (P2-02). Only apps/ and deploy/profiles/ are copied;
+# keep everything else, and anything built or installed on the host, out of the context.
+**/node_modules
+**/__pycache__
+apps/construction_shell/construction_shell/public/shell
+apps/construction_shell/frontend/dist
+.git
+phase0
+prototype
+vendor
+docs
+ops
+dev/.cache
+dev/.env
+dev/*.log

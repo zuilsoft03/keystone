@@ -1,0 +1,119 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "hash",
+ "creation": "2026-10-14 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "project",
+  "source_file",
+  "public_file",
+  "public_url",
+  "public_hash",
+  "caption",
+  "column_break_marked",
+  "enabled",
+  "marked_by",
+  "marked_on"
+ ],
+ "fields": [
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Construction Project",
+   "reqd": 1,
+   "in_list_view": 1,
+   "set_only_once": 1,
+   "ignore_user_permissions": 1
+  },
+  {
+   "fieldname": "source_file",
+   "fieldtype": "Link",
+   "label": "Render in the project's files",
+   "options": "File",
+   "reqd": 1,
+   "set_only_once": 1,
+   "ignore_user_permissions": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "public_file",
+   "fieldtype": "Link",
+   "label": "Public copy (no metadata)",
+   "options": "File",
+   "read_only": 1,
+   "ignore_user_permissions": 1
+  },
+  {
+   "fieldname": "public_url",
+   "fieldtype": "Data",
+   "label": "Public copy address",
+   "read_only": 1,
+   "hidden": 1,
+   "length": 255
+  },
+  {
+   "fieldname": "public_hash",
+   "fieldtype": "Data",
+   "label": "Public copy SHA-256",
+   "read_only": 1,
+   "hidden": 1,
+   "length": 64
+  },
+  {
+   "fieldname": "caption",
+   "fieldtype": "Data",
+   "label": "Caption (shown to everyone)",
+   "length": 80,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "column_break_marked",
+   "fieldtype": "Column Break",
+   "label": ""
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Show on the sign-in page",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "marked_by",
+   "fieldtype": "Link",
+   "label": "Marked By",
+   "options": "User",
+   "read_only": 1,
+   "ignore_user_permissions": 1
+  },
+  {
+   "fieldname": "marked_on",
+   "fieldtype": "Datetime",
+   "label": "Marked On",
+   "read_only": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-10-14 15:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Signin Picture",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

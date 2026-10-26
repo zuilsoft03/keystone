@@ -1,0 +1,8 @@
+{#- P3-78 (approvals design §3.10, §3.13; M10, L6): a request replaced or voided, or a final record changed after its
+approval, to the approvers. The firm's brand leads (in `lines`); the record's content; a link to the portal. -#}
+{% from "templates/includes/cc_approval_button.html" import button %}
+{% for line in lines %}<p>{{ line | e }}</p>
+{% endfor %}
+<p>{{ button(link, "Open it in the portal") }}</p>
+<p style="font-size: 12px; color: #6b6b6b;">You get this because you are an approver for {{ project | e }}.</p>
+{{ credit_html | safe }}

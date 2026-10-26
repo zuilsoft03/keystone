@@ -1,0 +1,194 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "hash",
+ "creation": "2026-10-20 16:00:00.000000",
+ "description": "A preview of a source's bytes (P3-75, design §15.3): its state, reason and stored WebP under <site>/private/thumbs, never a File and not backed up. Written by the thumbs job only; System Manager reads it in Desk. Viewers get previews through construction_core.previews.api, by the source's own rule.",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "source_type",
+  "source_name",
+  "source_key",
+  "sha256",
+  "spec",
+  "renderer_version",
+  "ext",
+  "kind",
+  "column_break_state",
+  "state",
+  "reason",
+  "attempts",
+  "retry_after",
+  "scanned",
+  "section_break_stored",
+  "path",
+  "width",
+  "height",
+  "size",
+  "info"
+ ],
+ "fields": [
+  {
+   "fieldname": "source_type",
+   "fieldtype": "Data",
+   "label": "Source Type",
+   "length": 64,
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "source_name",
+   "fieldtype": "Data",
+   "label": "Source",
+   "length": 140,
+   "read_only": 1,
+   "in_list_view": 1,
+   "search_index": 1
+  },
+  {
+   "description": "The source's content hash, or its board version",
+   "fieldname": "source_key",
+   "fieldtype": "Data",
+   "label": "Key",
+   "length": 64,
+   "read_only": 1
+  },
+  {
+   "description": "The sha256 of the bytes the job read: what names the stored preview and lets two sources share it",
+   "fieldname": "sha256",
+   "fieldtype": "Data",
+   "label": "SHA-256",
+   "length": 64,
+   "read_only": 1
+  },
+  {
+   "fieldname": "spec",
+   "fieldtype": "Data",
+   "label": "Spec",
+   "length": 16,
+   "read_only": 1
+  },
+  {
+   "fieldname": "renderer_version",
+   "fieldtype": "Data",
+   "label": "Renderer Version",
+   "length": 16,
+   "read_only": 1
+  },
+  {
+   "fieldname": "ext",
+   "fieldtype": "Data",
+   "label": "Type",
+   "length": 16,
+   "read_only": 1
+  },
+  {
+   "fieldname": "kind",
+   "fieldtype": "Data",
+   "label": "Reader",
+   "length": 16,
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_state",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "pending",
+   "fieldname": "state",
+   "fieldtype": "Select",
+   "label": "State",
+   "options": "pending\nready\nfailed\nskipped",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "reason",
+   "fieldtype": "Data",
+   "label": "Reason",
+   "length": 32,
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "attempts",
+   "fieldtype": "Int",
+   "label": "Attempts",
+   "read_only": 1
+  },
+  {
+   "fieldname": "retry_after",
+   "fieldtype": "Datetime",
+   "label": "Retry After",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "The bytes passed the virus scan (chat files and clients' files are scanned when they arrive)",
+   "fieldname": "scanned",
+   "fieldtype": "Check",
+   "label": "Scanned",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_stored",
+   "fieldtype": "Section Break",
+   "label": "Stored preview"
+  },
+  {
+   "description": "The file name under <site>/private/thumbs",
+   "fieldname": "path",
+   "fieldtype": "Data",
+   "label": "Stored As",
+   "length": 140,
+   "read_only": 1
+  },
+  {
+   "fieldname": "width",
+   "fieldtype": "Int",
+   "label": "Width",
+   "read_only": 1
+  },
+  {
+   "fieldname": "height",
+   "fieldtype": "Int",
+   "label": "Height",
+   "read_only": 1
+  },
+  {
+   "fieldname": "size",
+   "fieldtype": "Int",
+   "label": "Bytes",
+   "read_only": 1
+  },
+  {
+   "description": "What the card may show without a picture (IFC: schema and app)",
+   "fieldname": "info",
+   "fieldtype": "Small Text",
+   "label": "Meta",
+   "read_only": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-10-20 18:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Preview Image",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

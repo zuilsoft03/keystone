@@ -1,0 +1,49 @@
+# Delivery image for one deploy profile (DR-1, D-083): the pinned base plus our apps, baked in.
+#
+# BASE_IMAGE is the `core` base built by deploy/build.sh from dev/Containerfile.core with the SHAs and the Python
+# digest in deploy/profiles/<profile>/apps-versions.json; build.sh passes its local tag, which names both commits.
+# Never install into a running stack: a change is a new image.
+#
+# Build context: the repo root.  Usage: bash deploy/build.sh <core|core+office|full>
+ARG BASE_IMAGE
+# The Node image that builds the shell, pinned by digest in the profile (base.shell_node) and in dev/shell-images.sh.
+ARG SHELL_NODE_IMAGE
+
+# The shell's app (P2-02, D-111): `npm ci` installs exactly the lockfile's packages, each checked against its integrity
+# hash, then Vite builds it. Only the built files reach the delivery image, so a server never needs npm or Node tools.
+FROM ${SHELL_NODE_IMAGE} AS shell-build
+WORKDIR /build/frontend
+COPY apps/construction_shell/frontend/package.json apps/construction_shell/frontend/package-lock.json ./
+RUN npm ci --ignore-scripts --no-audit --no-fund --loglevel=error
+COPY apps/construction_shell/frontend/ ./
+COPY apps/construction_shell/construction_shell/sections.json /build/construction_shell/sections.json
+COPY apps/construction_shell/construction_shell/words.json /build/construction_shell/words.json
+RUN npx vite build --logLevel warn && test -f dist/.vite/manifest.json
+
+FROM ${BASE_IMAGE} AS app
+
+ARG PROFILE
+USER root
+# Adapter-only build needs belong to the `full` profile only (DR-1): ffmpeg (Drive thumbnails) and
+# build-essential (Raven's search index). The list comes from the profile's apps-versions.json.
+ARG BUILD_PACKAGES=""
+RUN set -eu; \
+  case "${PROFILE}" in core|core+office|full) ;; *) echo "unknown PROFILE '${PROFILE}'" >&2; exit 1 ;; esac; \
+  if [ -n "${BUILD_PACKAGES}" ]; then \
+    if [ "${PROFILE}" != "full" ]; then echo "build packages are for the full profile only" >&2; exit 1; fi; \
+    apt-get update; \
+    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y ${BUILD_PACKAGES}; \
+    rm -rf /var/lib/apt/lists/*; \
+  fi
+
+USER frappe
+WORKDIR /home/frappe/frappe-bench
+COPY --chown=frappe:0 apps/construction_core apps/construction_core
+RUN ./env/bin/pip install --no-cache-dir --no-deps -e apps/construction_core   && ln -sfn ../apps/construction_core/construction_core/public assets/construction_core  # /assets/construction_core
+# The shell (P2-02): its Python package, and its built app where the page reads the manifest (/assets/construction_shell).
+COPY --chown=frappe:0 apps/construction_shell apps/construction_shell
+COPY --chown=frappe:0 --from=shell-build /build/frontend/dist apps/construction_shell/construction_shell/public/shell
+RUN ./env/bin/pip install --no-cache-dir --no-deps -e apps/construction_shell   && ln -sfn ../apps/construction_shell/construction_shell/public assets/construction_shell   && test -f apps/construction_shell/construction_shell/public/shell/.vite/manifest.json
+COPY --chown=frappe:0 deploy/profiles/${PROFILE}/apps-versions.json apps-versions.profile.json
+LABEL org.opencontainers.image.title="construction-workspace" \
+      construction.profile="${PROFILE}"

@@ -1,0 +1,158 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "hash",
+ "creation": "2026-10-21 12:00:00.000000",
+ "description": "A poll a chat message carries (P3-68, design §3.7), with its tallies kept on the row; written by the server only and read by the server only: the card is drawn per viewer.",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "message",
+  "thread",
+  "question",
+  "options",
+  "multiple",
+  "anonymous",
+  "closes_on",
+  "closed_on",
+  "closed_by",
+  "tally",
+  "voters",
+  "voter_count",
+  "project",
+  "audience",
+  "staff_only"
+ ],
+ "fields": [
+  {
+   "fieldname": "message",
+   "fieldtype": "Link",
+   "label": "Message",
+   "read_only": 1,
+   "options": "Discuss Message",
+   "reqd": 1,
+   "search_index": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "thread",
+   "fieldtype": "Link",
+   "label": "Thread",
+   "read_only": 1,
+   "options": "Discuss Thread",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "question",
+   "fieldtype": "Small Text",
+   "label": "Question",
+   "read_only": 1,
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "options",
+   "fieldtype": "Long Text",
+   "label": "Options",
+   "read_only": 1,
+   "description": "JSON: [{key, text, picture}], 2 to 10."
+  },
+  {
+   "fieldname": "multiple",
+   "fieldtype": "Check",
+   "label": "Several Choices",
+   "read_only": 1,
+   "default": "0"
+  },
+  {
+   "fieldname": "anonymous",
+   "fieldtype": "Check",
+   "label": "Anonymous",
+   "read_only": 1,
+   "default": "0"
+  },
+  {
+   "fieldname": "closes_on",
+   "fieldtype": "Datetime",
+   "label": "Closes On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "closed_on",
+   "fieldtype": "Datetime",
+   "label": "Closed On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "closed_by",
+   "fieldtype": "Link",
+   "label": "Closed By",
+   "read_only": 1,
+   "options": "User"
+  },
+  {
+   "fieldname": "tally",
+   "fieldtype": "Long Text",
+   "label": "Tally",
+   "read_only": 1,
+   "description": "JSON {option key: votes}, recounted after each commit."
+  },
+  {
+   "fieldname": "voters",
+   "fieldtype": "Long Text",
+   "label": "Voters",
+   "read_only": 1,
+   "description": "JSON {option key: [user]} of a named poll; empty when anonymous."
+  },
+  {
+   "fieldname": "voter_count",
+   "fieldtype": "Int",
+   "label": "People Voted",
+   "read_only": 1,
+   "default": "0"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Construction Project",
+   "read_only": 1,
+   "options": "Construction Project",
+   "ignore_user_permissions": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "audience",
+   "fieldtype": "Data",
+   "label": "Audience",
+   "read_only": 1
+  },
+  {
+   "fieldname": "staff_only",
+   "fieldtype": "Check",
+   "label": "Staff Only",
+   "read_only": 1,
+   "default": "0"
+  }
+ ],
+ "links": [],
+ "modified": "2026-10-21 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Discuss Poll",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

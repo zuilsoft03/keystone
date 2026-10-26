@@ -1,0 +1,9 @@
+.DS_Store
+*.pyc
+*.egg-info
+*.swp
+__pycache__
+node_modules
+# Built by dev/build-shell.sh (development) or by the image's shell-build stage (delivery); never committed.
+construction_shell/public/shell/
+frontend/dist/

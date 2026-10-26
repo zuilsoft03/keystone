@@ -1,0 +1,102 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "hash",
+ "creation": "2026-10-12 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "account",
+  "full_name",
+  "mobile_no",
+  "company_name",
+  "column_break_consent",
+  "consent_version",
+  "consent_on",
+  "joined_from",
+  "left_on"
+ ],
+ "fields": [
+  {
+   "fieldname": "account",
+   "fieldtype": "Link",
+   "label": "Account",
+   "options": "User",
+   "reqd": 1,
+   "unique": 1,
+   "set_only_once": 1,
+   "ignore_user_permissions": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "label": "Name the team sees",
+   "length": 140,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "mobile_no",
+   "fieldtype": "Data",
+   "label": "Mobile",
+   "length": 40
+  },
+  {
+   "fieldname": "company_name",
+   "fieldtype": "Data",
+   "label": "Company or business",
+   "length": 140
+  },
+  {
+   "fieldname": "column_break_consent",
+   "fieldtype": "Column Break",
+   "label": ""
+  },
+  {
+   "fieldname": "consent_version",
+   "fieldtype": "Data",
+   "label": "Privacy Notice Version",
+   "read_only": 1
+  },
+  {
+   "fieldname": "consent_on",
+   "fieldtype": "Datetime",
+   "label": "Agreed On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "joined_from",
+   "fieldtype": "Link",
+   "label": "Joined From",
+   "options": "Access Invite",
+   "read_only": 1
+  },
+  {
+   "fieldname": "left_on",
+   "fieldtype": "Date",
+   "label": "Left Last Project On",
+   "read_only": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-10-12 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Client Profile",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0,
+ "title_field": "full_name"
+}

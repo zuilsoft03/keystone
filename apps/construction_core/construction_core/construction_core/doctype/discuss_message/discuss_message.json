@@ -1,0 +1,264 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "hash",
+ "creation": "2026-10-09 18:54:14.805316",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "thread",
+  "project",
+  "audience",
+  "author",
+  "content",
+  "file",
+  "mentions",
+  "staff_only",
+  "kind",
+  "client_id",
+  "pinned",
+  "pinned_by",
+  "pinned_on",
+  "edited",
+  "removed",
+  "reactions",
+  "agreed",
+  "agreed_by",
+  "agreed_on"
+ ],
+ "fields": [
+  {
+   "fieldname": "thread",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Thread",
+   "options": "Discuss Thread",
+   "reqd": 1,
+   "search_index": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "label": "Construction Project",
+   "options": "Construction Project",
+   "read_only": 1,
+   "search_index": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "audience",
+   "fieldtype": "Data",
+   "label": "Audience",
+   "read_only": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "author",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Author",
+   "options": "User",
+   "read_only": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "content",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Message"
+  },
+  {
+   "fieldname": "file",
+   "fieldtype": "Link",
+   "label": "Attachment",
+   "options": "File"
+  },
+  {
+   "description": "Users mentioned with @email, one per line",
+   "fieldname": "mentions",
+   "fieldtype": "Small Text",
+   "label": "Mentions",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "An old note visible to the project team only, even inside a client conversation (D-098). New notes stopped with P3-64 (D-419): use \"Discuss with team\".",
+   "fieldname": "staff_only",
+   "fieldtype": "Check",
+   "label": "Staff-only note",
+   "read_only": 1,
+   "set_only_once": 1
+  },
+  {
+   "description": "Set by the server from what the message carries (D-358).",
+   "fieldname": "kind",
+   "fieldtype": "Select",
+   "label": "Kind",
+   "options": "Text\nFiles\nVoice\nPoll\nSystem",
+   "read_only": 1
+  },
+  {
+   "description": "The sender's id for one send: a retried send returns the first message (F8).",
+   "fieldname": "client_id",
+   "fieldtype": "Data",
+   "label": "Client ID",
+   "length": 64,
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "pinned",
+   "fieldtype": "Check",
+   "label": "Pinned",
+   "permlevel": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "pinned_by",
+   "fieldtype": "Link",
+   "label": "Pinned By",
+   "options": "User",
+   "permlevel": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "pinned_on",
+   "fieldtype": "Datetime",
+   "label": "Pinned On",
+   "permlevel": 1,
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "Set by the edit endpoint only (P3-68): the text was edited; every earlier text is in Discuss Message Version.",
+   "fieldname": "edited",
+   "fieldtype": "Check",
+   "label": "Edited",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "Set by the remove endpoint only (P3-68, D-388): the text is in Discuss Removed Text, for System Managers only.",
+   "fieldname": "removed",
+   "fieldtype": "Check",
+   "label": "Removed",
+   "read_only": 1
+  },
+  {
+   "description": "JSON {reaction: [user]}, recounted from Discuss Reaction after each commit (P3-68).",
+   "fieldname": "reactions",
+   "fieldtype": "Small Text",
+   "label": "Reactions",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "Marked Agreed by the team (D-373): the client sees it at the top. Not a client approval.",
+   "fieldname": "agreed",
+   "fieldtype": "Check",
+   "label": "Agreed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "agreed_by",
+   "fieldtype": "Link",
+   "label": "Agreed By",
+   "options": "User",
+   "permlevel": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "agreed_on",
+   "fieldtype": "Datetime",
+   "label": "Agreed On",
+   "permlevel": 1,
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-21 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Discuss Message",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Construction Manager",
+   "share": 0,
+   "write": 0
+  },
+  {
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Construction Staff",
+   "share": 0,
+   "write": 0
+  },
+  {
+   "create": 0,
+   "delete": 0,
+   "email": 0,
+   "export": 0,
+   "print": 0,
+   "read": 1,
+   "report": 0,
+   "role": "Construction Client",
+   "share": 0,
+   "write": 0
+  },
+  {
+   "permlevel": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager"
+  },
+  {
+   "permlevel": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Construction Manager"
+  },
+  {
+   "permlevel": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Construction Staff"
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

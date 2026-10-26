@@ -1,0 +1,118 @@
+{
+ "actions": [],
+ "creation": "2026-10-25 18:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "links": [],
+ "modified": "2026-10-25 18:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Approval Route Step",
+ "owner": "Administrator",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "istable": 1,
+ "editable_grid": 1,
+ "track_changes": 0,
+ "description": "One internal step of an Approval Route (approvals design §14.2). Before the client a step approves or returns; after the client it acknowledges only.",
+ "fields": [
+  {
+   "fieldname": "step_name",
+   "fieldtype": "Data",
+   "label": "Step",
+   "reqd": 1,
+   "in_list_view": 1,
+   "length": 140
+  },
+  {
+   "fieldname": "position",
+   "fieldtype": "Select",
+   "label": "Position",
+   "reqd": 1,
+   "in_list_view": 1,
+   "options": "Before the client\nAfter the client",
+   "default": "Before the client"
+  },
+  {
+   "fieldname": "who",
+   "fieldtype": "Select",
+   "label": "Who",
+   "reqd": 1,
+   "in_list_view": 1,
+   "options": "Project role\nStaff role\nPeople",
+   "default": "Project role"
+  },
+  {
+   "fieldname": "project_role",
+   "fieldtype": "Select",
+   "label": "Project Role",
+   "options": "\nProject Manager\nArchitect\nEngineer\nSite\nConsultant",
+   "depends_on": "eval:doc.who=='Project role'"
+  },
+  {
+   "fieldname": "staff_role",
+   "fieldtype": "Select",
+   "label": "Staff Role",
+   "options": "\nConstruction Manager\nConstruction Staff",
+   "depends_on": "eval:doc.who=='Staff role'"
+  },
+  {
+   "fieldname": "people",
+   "fieldtype": "Small Text",
+   "label": "People",
+   "depends_on": "eval:doc.who=='People'",
+   "description": "One staff account (email) per line."
+  },
+  {
+   "fieldname": "rule",
+   "fieldtype": "Select",
+   "label": "Rule",
+   "reqd": 1,
+   "options": "Any one\nAll",
+   "default": "Any one",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "condition",
+   "fieldtype": "Select",
+   "label": "Condition",
+   "reqd": 1,
+   "options": "Always\nCost above\nDays above",
+   "default": "Always"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Cost Above",
+   "depends_on": "eval:doc.condition=='Cost above'"
+  },
+  {
+   "fieldname": "days",
+   "fieldtype": "Int",
+   "label": "Days Above",
+   "depends_on": "eval:doc.condition=='Days above'"
+  },
+  {
+   "fieldname": "due_days",
+   "fieldtype": "Int",
+   "label": "Due (working days)",
+   "default": "2",
+   "reqd": 1
+  }
+ ],
+ "permissions": [],
+ "field_order": [
+  "step_name",
+  "position",
+  "who",
+  "project_role",
+  "staff_role",
+  "people",
+  "rule",
+  "condition",
+  "amount",
+  "days",
+  "due_days"
+ ]
+}

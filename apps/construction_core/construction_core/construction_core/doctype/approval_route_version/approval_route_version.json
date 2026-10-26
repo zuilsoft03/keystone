@@ -1,0 +1,70 @@
+{
+ "actions": [],
+ "creation": "2026-10-25 18:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "links": [],
+ "modified": "2026-10-25 18:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Approval Route Version",
+ "owner": "Administrator",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "autoname": "hash",
+ "allow_rename": 0,
+ "in_create": 1,
+ "track_changes": 0,
+ "description": "One saved state of an Approval Route (approvals design §14.2, §14.4; P3-82): append-only, its canonical text and SHA-256, the author and the time, written only by approvals.routes under the ledger's claim. No role has permissions on it; never changed, renamed or deleted by anyone.",
+ "fields": [
+  {
+   "fieldname": "route",
+   "fieldtype": "Data",
+   "label": "Route",
+   "read_only": 1,
+   "reqd": 1,
+   "in_list_view": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "author",
+   "fieldtype": "Data",
+   "label": "Author",
+   "read_only": 1,
+   "reqd": 1,
+   "description": "Data, never a Link: a User rename does not rewrite it."
+  },
+  {
+   "fieldname": "at_utc",
+   "fieldtype": "Datetime",
+   "label": "At (UTC)",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "sha256",
+   "fieldtype": "Data",
+   "label": "SHA-256",
+   "read_only": 1,
+   "reqd": 1,
+   "length": 64
+  },
+  {
+   "fieldname": "canonical",
+   "fieldtype": "Long Text",
+   "label": "Canonical Text",
+   "read_only": 1,
+   "reqd": 1,
+   "ignore_xss_filter": 1
+  }
+ ],
+ "permissions": [],
+ "field_order": [
+  "route",
+  "author",
+  "at_utc",
+  "sha256",
+  "canonical"
+ ]
+}

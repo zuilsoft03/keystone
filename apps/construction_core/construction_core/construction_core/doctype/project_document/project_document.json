@@ -1,0 +1,205 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "PD-.#####",
+ "creation": "2026-10-09 18:41:08.787432",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "project",
+  "document_number",
+  "revision",
+  "title",
+  "status",
+  "column_break_1",
+  "discipline",
+  "design_stage",
+  "author",
+  "lead_reviewer",
+  "client_approval_required",
+  "client_visible",
+  "section_file",
+  "document_file",
+  "approved_revision_hash",
+  "supersedes",
+  "attachments",
+  "distribution"
+ ],
+ "fields": [
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Construction Project",
+   "options": "Construction Project",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "document_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Document Number",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "default": "P01",
+   "fieldname": "revision",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Revision",
+   "reqd": 1
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title",
+   "reqd": 1
+  },
+  {
+   "default": "WIP",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "WIP\nLead Review\nShared\nCoordination Review\nClient Review\nPublished\nArchived\nCancelled"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "discipline",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "label": "Discipline",
+   "options": "\nArchitectural\nStructural\nMechanical\nElectrical\nPlumbing\nCivil\nGeneral"
+  },
+  {
+   "fieldname": "design_stage",
+   "fieldtype": "Data",
+   "label": "Design Stage"
+  },
+  {
+   "fieldname": "author",
+   "fieldtype": "Link",
+   "label": "Author",
+   "options": "User"
+  },
+  {
+   "fieldname": "lead_reviewer",
+   "fieldtype": "Link",
+   "label": "Lead Reviewer",
+   "options": "User"
+  },
+  {
+   "default": "0",
+   "fieldname": "client_approval_required",
+   "fieldtype": "Check",
+   "label": "Client Approval Required"
+  },
+  {
+   "default": "0",
+   "description": "Clients see this revision once it is Published",
+   "fieldname": "client_visible",
+   "fieldtype": "Check",
+   "label": "Client Visible"
+  },
+  {
+   "fieldname": "section_file",
+   "fieldtype": "Section Break",
+   "label": "File"
+  },
+  {
+   "fieldname": "document_file",
+   "fieldtype": "Link",
+   "label": "Document File",
+   "options": "File"
+  },
+  {
+   "fieldname": "approved_revision_hash",
+   "fieldtype": "Data",
+   "label": "Approved Revision Hash",
+   "read_only": 1
+  },
+  {
+   "fieldname": "supersedes",
+   "fieldtype": "Link",
+   "label": "Supersedes",
+   "options": "Project Document",
+   "read_only": 1
+  },
+  {
+   "fieldname": "attachments",
+   "fieldtype": "Table",
+   "label": "Attachments",
+   "options": "Attachment Ref"
+  },
+  {
+   "fieldname": "distribution",
+   "fieldtype": "Table",
+   "label": "Distribution",
+   "options": "Distribution User"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-09 18:41:08.787432",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Project Document",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Construction Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Construction Staff",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "search_fields": "document_number,title,revision",
+ "show_title_field_in_link": 1,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "title",
+ "track_changes": 1
+}

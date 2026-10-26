@@ -1,0 +1,347 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "hash",
+ "creation": "2026-10-20 12:00:00.000000",
+ "description": "A file a chat message carries, staged at upload and claimed at send (P3-65, design §3.2). Written by the server only. Project staff read Sent rows and their own uploads; clients read none.",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "thread",
+  "message",
+  "state",
+  "source",
+  "uploader",
+  "project",
+  "audience",
+  "staff_only",
+  "file",
+  "source_file",
+  "file_name",
+  "ext",
+  "kind",
+  "file_size",
+  "content_hash",
+  "rev",
+  "width",
+  "height",
+  "has_preview",
+  "preview_w",
+  "preview_h",
+  "preview_state",
+  "preview_reason",
+  "preview_meta",
+  "checking",
+  "scan_tries",
+  "scan_reason",
+  "taken_on",
+  "staged",
+  "expires_on",
+  "sent_on",
+  "position",
+  "voice_length",
+  "voice_type",
+  "voice_codec",
+  "voice_wave"
+ ],
+ "fields": [
+  {
+   "fieldname": "thread",
+   "fieldtype": "Link",
+   "label": "Thread",
+   "read_only": 1,
+   "options": "Discuss Thread",
+   "reqd": 1,
+   "search_index": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "message",
+   "fieldtype": "Link",
+   "label": "Message",
+   "read_only": 1,
+   "options": "Discuss Message",
+   "search_index": 1,
+   "description": "Empty while the upload waits to be sent."
+  },
+  {
+   "fieldname": "state",
+   "fieldtype": "Select",
+   "label": "State",
+   "read_only": 1,
+   "options": "Pending\nSent\nRemoved\nHeld",
+   "default": "Pending",
+   "description": "Held (P3-71): an upload waiting on a file request item, with no expiry; never sent, purged or drawn as a card.",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "source",
+   "fieldtype": "Select",
+   "label": "Source",
+   "read_only": 1,
+   "options": "Upload\nCopy\nLink",
+   "default": "Upload",
+   "reqd": 1,
+   "description": "Upload: sent from a device. Copy: a checked copy of a project file (Share and send, D-390). Link: a project file linked, never copied or shared."
+  },
+  {
+   "fieldname": "uploader",
+   "fieldtype": "Link",
+   "label": "Uploader",
+   "read_only": 1,
+   "options": "User",
+   "reqd": 1,
+   "search_index": 1,
+   "ignore_user_permissions": 1
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Construction Project",
+   "read_only": 1,
+   "options": "Construction Project",
+   "search_index": 1,
+   "ignore_user_permissions": 1
+  },
+  {
+   "fieldname": "audience",
+   "fieldtype": "Data",
+   "label": "Audience",
+   "read_only": 1
+  },
+  {
+   "fieldname": "staff_only",
+   "fieldtype": "Check",
+   "label": "Staff Only",
+   "read_only": 1,
+   "default": "0"
+  },
+  {
+   "fieldname": "file",
+   "fieldtype": "Data",
+   "label": "File",
+   "read_only": 1,
+   "search_index": 1,
+   "description": "Set at send for an upload or a copy; the linked file for a link. Data, never a Link: a File is deleted or binned on its own, and the card then looks like a deleted file (rule 2)."
+  },
+  {
+   "fieldname": "source_file",
+   "fieldtype": "Data",
+   "label": "Source File",
+   "read_only": 1,
+   "description": "The project file a copy was made from; never shared by the copy. Data, never a Link: a File is deleted or binned on its own, and the card then looks like a deleted file (rule 2)."
+  },
+  {
+   "fieldname": "file_name",
+   "fieldtype": "Data",
+   "label": "File Name",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "ext",
+   "fieldtype": "Data",
+   "label": "Type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "kind",
+   "fieldtype": "Data",
+   "label": "Kind",
+   "read_only": 1,
+   "description": "photo, pdf, office, drawing, model or file (design §15.6)."
+  },
+  {
+   "fieldname": "file_size",
+   "fieldtype": "Int",
+   "label": "Size",
+   "read_only": 1
+  },
+  {
+   "fieldname": "content_hash",
+   "fieldtype": "Data",
+   "label": "Content Hash",
+   "read_only": 1,
+   "search_index": 1,
+   "description": "Of the bytes sent (R-32, §15.3): a card shows the revision that was sent."
+  },
+  {
+   "fieldname": "rev",
+   "fieldtype": "Data",
+   "label": "Revision Sent",
+   "read_only": 1
+  },
+  {
+   "fieldname": "width",
+   "fieldtype": "Int",
+   "label": "Width",
+   "read_only": 1
+  },
+  {
+   "fieldname": "height",
+   "fieldtype": "Int",
+   "label": "Height",
+   "read_only": 1
+  },
+  {
+   "fieldname": "has_preview",
+   "fieldtype": "Check",
+   "label": "Has Preview",
+   "read_only": 1,
+   "default": "0"
+  },
+  {
+   "fieldname": "preview_w",
+   "fieldtype": "Int",
+   "label": "Preview Width",
+   "read_only": 1
+  },
+  {
+   "fieldname": "preview_h",
+   "fieldtype": "Int",
+   "label": "Preview Height",
+   "read_only": 1
+  },
+  {
+   "description": "P3-75: pending, ready, failed or skipped; empty before the previews row",
+   "fieldname": "preview_state",
+   "fieldtype": "Data",
+   "label": "Preview State",
+   "length": 16,
+   "read_only": 1
+  },
+  {
+   "fieldname": "preview_reason",
+   "fieldtype": "Data",
+   "label": "Preview Reason",
+   "length": 32,
+   "read_only": 1
+  },
+  {
+   "description": "What the card shows without a picture (IFC: schema and app), as JSON",
+   "fieldname": "preview_meta",
+   "fieldtype": "Small Text",
+   "label": "Preview Meta",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "P3-75 (D-417): a large file waits for its background virus scan; it cannot be sent until clean",
+   "fieldname": "checking",
+   "fieldtype": "Check",
+   "label": "Being Checked",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "description": "P3-75: background scans that could not run (clamd down); refused after scan_holds.MAX_TRIES",
+   "fieldname": "scan_tries",
+   "fieldtype": "Int",
+   "label": "Scan Tries",
+   "read_only": 1
+  },
+  {
+   "description": "P3-75: why a held upload was refused (threat, could_not_check); it cannot be sent",
+   "fieldname": "scan_reason",
+   "fieldtype": "Data",
+   "label": "Scan Reason",
+   "length": 32,
+   "read_only": 1
+  },
+  {
+   "fieldname": "taken_on",
+   "fieldtype": "Datetime",
+   "label": "Taken On",
+   "read_only": 1,
+   "description": "The capture time only; the place is never kept (L-16)."
+  },
+  {
+   "fieldname": "staged",
+   "fieldtype": "Data",
+   "label": "Staged",
+   "read_only": 1,
+   "hidden": 1,
+   "description": "The waiting bytes, outside the site's files (D-389)."
+  },
+  {
+   "fieldname": "expires_on",
+   "fieldtype": "Datetime",
+   "label": "Expires On",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "sent_on",
+   "fieldtype": "Datetime",
+   "label": "Sent On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "position",
+   "fieldtype": "Int",
+   "label": "Position",
+   "read_only": 1,
+   "default": "0"
+  },
+  {
+   "description": "P3-67 (design §3.6): a voice note's length in seconds, read by the server from the container, never the browser's",
+   "fieldname": "voice_length",
+   "fieldtype": "Float",
+   "label": "Voice Length",
+   "precision": "3",
+   "read_only": 1
+  },
+  {
+   "description": "P3-67 (SEC-16): the audio type detected from the bytes (audio/mp4, audio/ogg, audio/webm)",
+   "fieldname": "voice_type",
+   "fieldtype": "Data",
+   "label": "Voice Type",
+   "read_only": 1
+  },
+  {
+   "description": "P3-67: aac or opus",
+   "fieldname": "voice_codec",
+   "fieldtype": "Data",
+   "label": "Voice Codec",
+   "read_only": 1
+  },
+  {
+   "description": "P3-67: the waveform the browser sent at the send, checked for count and range, as JSON",
+   "fieldname": "voice_wave",
+   "fieldtype": "Small Text",
+   "label": "Voice Waveform",
+   "read_only": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-10-24 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Discuss Attachment",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "Construction Manager"
+  },
+  {
+   "read": 1,
+   "report": 1,
+   "role": "Construction Staff"
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

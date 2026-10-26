@@ -1,0 +1,18 @@
+{
+	"_comment": "The workspace's URL shapes (P2-02, D-109). The server's path check (workspace_page.py) and the app's router (frontend/src/router.js) both read this file, so they cannot drift. Keys match Workspace Section.section in construction_core where one exists. `label` and `group` are the staff rail's, from the live design (D-124): Whiteboards are Canvas and Takeoff is Viewers; a divider separates the groups (P2-09). `rail: false`: a page never on the rail; client-view, the staff preview of one client's portal, opens from Home and Settings (P3-05, D-136).",
+	"sections": {
+		"home": { "label": "Home", "group": 1, "item": false, "actions": [] },
+		"discuss": { "label": "Discuss", "group": 1, "item": true, "actions": [] },
+		"files": { "label": "Files", "group": 1, "item": true, "actions": ["edit"] },
+		"documents": { "label": "Documents", "group": 2, "item": true, "actions": [] },
+		"rfi": { "label": "RFIs", "group": 2, "item": true, "actions": [] },
+		"submittals": { "label": "Submittals", "group": 2, "item": true, "actions": [] },
+		"variations": { "label": "Variations", "group": 2, "item": true, "actions": [] },
+		"whiteboards": { "label": "Canvas", "group": 1, "item": true, "actions": [] },
+		"takeoff": { "label": "Viewers", "group": 2, "item": true, "actions": [] },
+		"boq": { "label": "BOQ", "group": 2, "item": true, "actions": [] },
+		"settings": { "label": "Settings", "group": 3, "item": false, "actions": [] },
+		"client-view": { "label": "Client view", "group": 3, "item": true, "actions": [], "rail": false }
+	},
+	"segment": "^[A-Za-z0-9][A-Za-z0-9._-]{0,139}$"
+}

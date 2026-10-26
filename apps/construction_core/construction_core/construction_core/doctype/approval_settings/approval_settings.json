@@ -1,0 +1,65 @@
+{
+ "actions": [],
+ "creation": "2026-10-24 19:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "issingle": 1,
+ "field_order": [
+  "evidence_section",
+  "evidence_mailbox",
+  "evidence_mailbox_confirmed",
+  "evidence_token_hash",
+  "evidence_token_expires"
+ ],
+ "fields": [
+  {
+   "fieldname": "evidence_section",
+   "fieldtype": "Section Break",
+   "label": "Evidence mailbox",
+   "description": "P3-77 (approvals design §3.2 item 3): a firm mailbox the System Manager does not control. Set through the approvals settings only: a test message with a confirm link proves it works, and every change is recorded in every project's approvals chain and mailed to the old and the new address."
+  },
+  {
+   "fieldname": "evidence_mailbox",
+   "fieldtype": "Data",
+   "options": "Email",
+   "label": "Evidence mailbox",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "evidence_mailbox_confirmed",
+   "fieldtype": "Check",
+   "label": "Confirmed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "evidence_token_hash",
+   "fieldtype": "Data",
+   "label": "Confirm link (SHA-256)",
+   "hidden": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "evidence_token_expires",
+   "fieldtype": "Datetime",
+   "label": "Confirm link expires",
+   "hidden": 1,
+   "read_only": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-10-24 19:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Approval Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

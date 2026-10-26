@@ -1,0 +1,40 @@
+# --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# --- Node ---
+node_modules/
+*.log
+npm-debug.log*
+
+# --- Editor / tooling ---
+.vscode/
+.idea/
+
+# --- Frappe bench artifacts (if a bench is created in-tree later) ---
+sites/*/private/backups/
+sites/*/site_config.json
+*.sql.gz
+
+# --- dev stack (P1-01): build cache and generated secrets ---
+dev/.cache/
+dev/.env
+dev/*.log
+
+# --- Open CAD Studio web bundle (P3-48, D-318): 93 MB, built by dev/build-opencadstudio.sh, not committed ---
+apps/construction_core/construction_core/public/vendor/opencadstudio-*/
+
+# --- the drawing viewer page (P3-49, D-329): built by dev/build-cadviewer.sh, not committed ---
+apps/construction_core/construction_core/public/vendor/cadviewer-*/
+dev/cadviewer/node_modules/
+dev/cadviewer/dist/
+

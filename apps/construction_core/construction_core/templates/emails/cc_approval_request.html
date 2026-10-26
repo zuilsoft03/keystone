@@ -1,0 +1,11 @@
+{#- P3-78 (approvals design §3.4, §3.10, §3.13; M10): the request email and its reminders, to each approver. The firm's
+brand leads; the record's content; a link to the portal's sheet; never a frozen copy. -#}
+{% from "templates/includes/cc_approval_button.html" import button %}
+<p>{% if brand %}{{ brand | e }}{% else %}The project team{% endif %} asks you to approve {{ what | e }} for {{ project | e }}.</p>
+{% if lead %}<p>{{ lead | e }}</p>
+{% endif %}
+{% for label, value in facts %}<p>{{ label | e }}: {{ value | e }}</p>
+{% endfor %}
+<p>{{ button(link, "Review and sign") }}</p>
+<p style="font-size: 12px; color: #6b6b6b;">You get this because you are an approver for {{ project | e }}.</p>
+{{ credit_html | safe }}

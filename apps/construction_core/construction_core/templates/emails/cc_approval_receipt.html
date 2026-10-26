@@ -1,0 +1,39 @@
+{#- P3-78 (approvals design §3.6), drawn to the canvas ApprovalReceipt in P3-79: one recipient's receipt of an answer. `mine`: the
+approver who answered, with their own facts, the attached signature and the "This was not me" link; anyone else gets the record, the
+answer, the name, the time and the fingerprint, and nothing personal. The firm's brand leads in the header and the product is the
+small credit (credit_html). Inline styles only, which mail clients keep; the colours are the shell's ink and blue in light. Each
+fact is one "Label: value" line, so a mail client without a grid draws it as the canvas does and a screen reader reads it whole.
+The frame draws no button, so the button macro is not used here (it stays on the request and notice mails). -#}
+{% set ink = "#171717" %}{% set quiet = "#6b6b6b" %}{% set line = "#e2e2e2" %}
+<div style="max-width: 640px; font-size: 14px; line-height: 1.5; color: {{ ink }};">
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin: 0 0 14px;"><tr>
+<td style="width: 30px; height: 30px; border-radius: 6px; background-color: #077ddf; color: #ffffff; font-size: 15px; font-weight: 700; text-align: center;">{{ (brand_name[:1] or "K") | upper | e }}</td>
+<td style="padding-left: 10px;"><div style="font-size: 15px; font-weight: 600;">{{ brand_name | e }}</div><div style="font-size: 12px; color: {{ quiet }};">{{ project | e }}</div></td>
+</tr></table>
+<h2 style="margin: 0 0 8px; font-size: 18px; font-weight: 600;">{% if mine %}Your approval receipt{% else %}An approver answered{% endif %}</h2>
+{% if mine %}
+<p style="margin: 0 0 12px;">You {{ verb | e }} this item in the {{ brand_name | e }} portal. Keep this email: it is your own copy.</p>
+<ul style="margin: 0 0 12px; padding: 0; list-style: none;">
+<li style="padding: 4px 0;">Item: {{ what | e }}</li>
+<li style="padding: 4px 0;">Answer: {{ verb | capitalize | e }}</li>
+{% for label, value in facts %}<li style="padding: 4px 0;">{{ label | e }}: {{ value | e }}</li>
+{% endfor %}</ul>
+{% for file, size in attached %}<p style="margin: 0 0 12px; padding: 8px 10px; border: 1px solid {{ line }}; border-radius: 6px; font-size: 13px;">{{ file | e }} <span style="color: {{ quiet }};">· attached · {{ size | e }}</span></p>
+{% endfor %}
+{% else %}
+<p style="margin: 0 0 12px;">{{ name | e }} {{ verb | e }} {{ what | e }} on {{ when | e }}.</p>
+<ul style="margin: 0 0 12px; padding: 0; list-style: none;">
+<li style="padding: 4px 0;">Item: {{ what | e }}</li>
+<li style="padding: 4px 0;">Answer: {{ verb | capitalize | e }}</li>
+<li style="padding: 4px 0;">By: {{ name | e }}</li>
+<li style="padding: 4px 0;">Time: {{ when | e }}</li>
+</ul>
+{% endif %}
+<p style="margin: 0 0 6px;">Entry {{ seq | e }} in the project's approval record.</p>
+<p style="margin: 0 0 6px; font-family: ui-monospace, Menlo, Consolas, monospace;">Fingerprint: {{ fingerprint | e }}</p>
+<p style="margin: 0 0 12px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11px; color: {{ quiet }}; word-break: break-all; overflow-wrap: anywhere;">{{ code | e }}</p>
+{% if link %}<p style="margin: 0 0 12px;">Did you not give this answer? <a href="{{ link | e }}">This was not me</a>. The link works once.</p>
+{% elif not mine %}<p style="margin: 0 0 12px; font-size: 13px; color: {{ quiet }};">You get this because you are an approver for {{ project | e }}. Nothing more to do.</p>
+{% endif %}
+</div>
+{{ credit_html | safe }}

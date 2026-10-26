@@ -1,0 +1,4 @@
+<p>{% if brand %}The team at {{ brand | e }}{% else %}The project team{% endif %} wrote to you in {{ project | e }}.</p>
+<p><a href="{{ link | e }}">Open the conversation</a> to read it.</p>
+<p>We email you once until you open the conversation.</p>
+{{ credit_html | safe }}

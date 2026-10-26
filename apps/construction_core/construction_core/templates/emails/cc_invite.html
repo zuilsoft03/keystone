@@ -1,0 +1,6 @@
+{% if logo_url %}<p style="margin: 0 0 16px;"><img src="{{ logo_url | e }}" alt="{{ brand | e }}" height="40" style="height: 40px; width: auto; border: 0;"></p>{% endif %}
+<p>Hello{% if name %} {{ name | e }}{% endif %},</p>
+<p>{% if inviter %}{{ inviter | e }}{% else %}The project team{% endif %}{% if brand %} at {{ brand | e }}{% endif %} invited you to follow your project online{% if not brand %} on {{ product | e }}{% endif %}.</p>
+<p><a href="{{ link | e }}">Set up your access</a></p>
+<p>This link is for you only and works until {{ expires | e }}. If you weren't expecting this email, you can ignore it.</p>
+{{ credit_html | safe }}

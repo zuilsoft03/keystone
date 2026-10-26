@@ -1,0 +1,6 @@
+{#- P3-78: an approval email's main action as a blue button. Inline styles, which mail clients keep; class "btn" keeps
+Frappe's mail rule for links (".email-body a:not(.btn)", dark and underlined, kept as !important) off it. The blue is the
+shell's surface-blue-7, as the client pages' main button. -#}
+{% macro button(href, label) -%}
+<a class="btn" href="{{ href | e }}" style="display: inline-block; padding: 12px 20px; border-radius: 10px; background-color: #077ddf; color: #ffffff; font-size: 18px; font-weight: 600; line-height: 24px; text-decoration: none;">{{ label | e }}</a>
+{%- endmacro %}

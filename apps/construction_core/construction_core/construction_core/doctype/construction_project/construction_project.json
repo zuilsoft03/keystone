@@ -1,0 +1,373 @@
+{
+ "actions": [],
+ "creation": "2026-10-10 20:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "project_name",
+  "status",
+  "expected_start_date",
+  "expected_end_date",
+  "column_break_status",
+  "cc_workspace_enabled",
+  "cc_contract_signed_on",
+  "cc_folder_template",
+  "cc_phase",
+  "members_section",
+  "users",
+  "site_section",
+  "cc_site_place",
+  "cc_latitude",
+  "column_break_site",
+  "cc_longitude",
+  "approvals_section",
+  "cc_portal_approvals",
+  "cc_device_location",
+  "cc_contract_document",
+  "cc_contract_date",
+  "cc_contract_clause",
+  "cc_contract_file",
+  "cc_contract_file_name",
+  "column_break_approvals",
+  "cc_client_legal_name",
+  "cc_client_address",
+  "internal_section",
+  "estimated_costing",
+  "cc_default_retention_pct",
+  "cc_default_vat_pct",
+  "cc_default_withholding_pct",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "project_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Project Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "default": "Open",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Open\nOn hold\nCompleted\nCancelled"
+  },
+  {
+   "fieldname": "expected_start_date",
+   "fieldtype": "Date",
+   "label": "Expected Start Date"
+  },
+  {
+   "fieldname": "expected_end_date",
+   "fieldtype": "Date",
+   "label": "Expected End Date"
+  },
+  {
+   "fieldname": "column_break_status",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "cc_workspace_enabled",
+   "fieldtype": "Check",
+   "label": "Workspace Enabled"
+  },
+  {
+   "depends_on": "cc_workspace_enabled",
+   "description": "A project starts at contract signature (D-071)",
+   "fieldname": "cc_contract_signed_on",
+   "fieldtype": "Date",
+   "label": "Contract Signed On"
+  },
+  {
+   "fieldname": "cc_folder_template",
+   "fieldtype": "Link",
+   "label": "Folder Template",
+   "options": "Folder Template"
+  },
+  {
+   "fieldname": "cc_phase",
+   "fieldtype": "Data",
+   "label": "Phase"
+  },
+  {
+   "fieldname": "members_section",
+   "fieldtype": "Section Break",
+   "label": "Members"
+  },
+  {
+   "fieldname": "users",
+   "fieldtype": "Table",
+   "label": "Members",
+   "options": "Project Member",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "site_section",
+   "fieldtype": "Section Break",
+   "label": "Site location",
+   "permlevel": 2,
+   "collapsible": 1,
+   "description": "P3-09 (D-138, D-157): staff only. Leave empty for a confidential project: it then has no pin on the map."
+  },
+  {
+   "fieldname": "cc_site_place",
+   "fieldtype": "Data",
+   "label": "Place",
+   "permlevel": 2,
+   "length": 140,
+   "description": "Shown on the map's site card, for example Pasig, Metro Manila"
+  },
+  {
+   "fieldname": "cc_latitude",
+   "fieldtype": "Float",
+   "label": "Latitude",
+   "permlevel": 2,
+   "precision": "6"
+  },
+  {
+   "fieldname": "column_break_site",
+   "fieldtype": "Column Break",
+   "permlevel": 2
+  },
+  {
+   "fieldname": "cc_longitude",
+   "fieldtype": "Float",
+   "label": "Longitude",
+   "permlevel": 2,
+   "precision": "6"
+  },
+  {
+   "fieldname": "approvals_section",
+   "fieldtype": "Section Break",
+   "label": "Client approvals",
+   "permlevel": 2,
+   "collapsible": 1,
+   "description": "P3-77 (approvals design §3.2): set by a Construction Manager through the approval settings only; staff read them, clients never."
+  },
+  {
+   "fieldname": "cc_portal_approvals",
+   "fieldtype": "Check",
+   "label": "Portal approvals",
+   "default": "0",
+   "permlevel": 2,
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "cc_device_location",
+   "fieldtype": "Check",
+   "label": "Device location",
+   "default": "0",
+   "permlevel": 2,
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "cc_contract_document",
+   "fieldtype": "Data",
+   "label": "Contract document",
+   "length": 140,
+   "permlevel": 2,
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "cc_contract_date",
+   "fieldtype": "Date",
+   "label": "Contract date",
+   "permlevel": 2,
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "cc_contract_clause",
+   "fieldtype": "Data",
+   "label": "Contract clause",
+   "length": 140,
+   "permlevel": 2,
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "cc_contract_file",
+   "fieldtype": "Data",
+   "label": "Contract file (SHA-256 of its frozen copy)",
+   "length": 64,
+   "permlevel": 2,
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "cc_contract_file_name",
+   "fieldtype": "Data",
+   "label": "Contract file name",
+   "length": 140,
+   "permlevel": 2,
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "column_break_approvals",
+   "fieldtype": "Column Break",
+   "permlevel": 2
+  },
+  {
+   "fieldname": "cc_client_legal_name",
+   "fieldtype": "Data",
+   "label": "Client's legal name",
+   "length": 140,
+   "permlevel": 2,
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "cc_client_address",
+   "fieldtype": "Small Text",
+   "label": "Client's business address or place of incorporation",
+   "permlevel": 2,
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "internal_section",
+   "fieldtype": "Section Break",
+   "label": "Internal (staff only)"
+  },
+  {
+   "fieldname": "estimated_costing",
+   "fieldtype": "Currency",
+   "label": "Contract Sum",
+   "permlevel": 2
+  },
+  {
+   "fieldname": "cc_default_retention_pct",
+   "fieldtype": "Percent",
+   "label": "Default Retention %",
+   "permlevel": 2
+  },
+  {
+   "fieldname": "cc_default_vat_pct",
+   "fieldtype": "Percent",
+   "label": "Default VAT %",
+   "permlevel": 2
+  },
+  {
+   "fieldname": "cc_default_withholding_pct",
+   "fieldtype": "Percent",
+   "label": "Default Withholding %",
+   "permlevel": 2
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Text Editor",
+   "label": "Notes",
+   "permlevel": 2
+  }
+ ],
+ "links": [],
+ "modified": "2026-10-24 19:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Construction Project",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "permlevel": 0,
+   "create": 1,
+   "read": 1,
+   "write": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  },
+  {
+   "role": "System Manager",
+   "permlevel": 1,
+   "read": 1,
+   "write": 1
+  },
+  {
+   "role": "System Manager",
+   "permlevel": 2,
+   "read": 1,
+   "write": 1
+  },
+  {
+   "role": "Construction Manager",
+   "permlevel": 0,
+   "create": 1,
+   "read": 1,
+   "write": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "share": 1,
+   "print": 1,
+   "email": 1
+  },
+  {
+   "role": "Construction Manager",
+   "permlevel": 1,
+   "read": 1,
+   "write": 1
+  },
+  {
+   "role": "Construction Manager",
+   "permlevel": 2,
+   "read": 1,
+   "write": 1
+  },
+  {
+   "role": "Construction Staff",
+   "permlevel": 0,
+   "read": 1,
+   "write": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1
+  },
+  {
+   "role": "Construction Staff",
+   "permlevel": 1,
+   "read": 1
+  },
+  {
+   "role": "Construction Staff",
+   "permlevel": 2,
+   "read": 1,
+   "write": 0
+  },
+  {
+   "role": "Desk User",
+   "permlevel": 2,
+   "read": 1
+  },
+  {
+   "role": "Construction Client",
+   "permlevel": 0,
+   "read": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "autoname": "PROJ-.####",
+ "title_field": "project_name",
+ "show_title_field_in_link": 1,
+ "search_fields": "project_name,status",
+ "max_attachments": 0,
+ "track_changes": 1,
+ "naming_rule": "Expression (old style)"
+}

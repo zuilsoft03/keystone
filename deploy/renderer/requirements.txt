@@ -1,0 +1,7 @@
+# The renderer's only Python packages (P3-75, design §15.1, §15.7: permissive licences only). Exact versions, wheels
+# only, each by its sha256 from PyPI; installed with --require-hashes --no-deps (neither has a runtime dependency).
+# Versions, hashes and licences: THIRD-PARTY.md.
+pillow==12.3.0 \
+    --hash=sha256:251bf95b67017e27b13d82f5b326234ca62d70f9cf4c2b9032de2358a3b12c7b
+pypdfium2==5.14.0 \
+    --hash=sha256:11f281613fa22313d9c7ab89947665e84eccf8ebe40e1198a84a88352305648d

@@ -1,0 +1,42 @@
+# The public TLS proxy (P1-19). It redirects HTTP to HTTPS, and Caddy gets and renews the certificate:
+#   production  TLS_ISSUER=you@example.com   (an ACME account email: Let's Encrypt, the domain must point here)
+#   staging     TLS_ISSUER=internal          (Caddy's own CA; deploy/staging.sh exports its root for the check)
+# Only this service publishes ports; everything behind it is on the compose network.
+
+{
+	admin 127.0.0.1:2019
+	# Listen on the published ports themselves (the same numbers inside and outside the container).
+	http_port {$HTTP_PORT:80}
+	https_port {$HTTPS_PORT:443}
+	# Our own redirect below; Caddy's automatic one would also redirect hosts this site does not serve.
+	auto_https disable_redirects
+}
+
+# HTTP only redirects. Written out, because Caddy's automatic redirect leaves out a non-standard HTTPS port.
+http://{$SITE_NAME}:{$HTTP_PORT:80} {
+	redir https://{host}:{$HTTPS_PORT:443}{uri} permanent
+}
+
+# Any other host on plain HTTP: not found (no redirect to a host we do not serve).
+http://:{$HTTP_PORT:80} {
+	respond "Not found" 404
+}
+
+{$SITE_NAME}:{$HTTPS_PORT:443} {
+	tls {$TLS_ISSUER}
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+	}
+
+	# 250 MB model files and their form, as the app's own limit (D-417); larger uploads are refused here first.
+	request_body {
+		max_size 251MiB
+	}
+
+	# Caddy sets X-Forwarded-Proto/For/Host itself and ignores the client's copies; Host is passed through.
+	reverse_proxy frontend:8080 {
+		flush_interval -1
+	}
+}

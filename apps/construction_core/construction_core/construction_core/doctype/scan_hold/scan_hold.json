@@ -1,0 +1,142 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "hash",
+ "creation": "2026-10-20 19:00:00.000000",
+ "description": "A client's Files send too large to scan in the request (P3-75, D-417): its bytes wait outside the site's files until the background scan says they are clean, then become the client's File. Written by the server only; System Manager reads it in Desk. The client sees name, size and state through portal_api.checking.",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "uploader",
+  "project",
+  "folder",
+  "file_name",
+  "ext",
+  "size",
+  "sha256",
+  "staged",
+  "column_break_state",
+  "state",
+  "reason",
+  "tries",
+  "next_try"
+ ],
+ "fields": [
+  {
+   "fieldname": "uploader",
+   "fieldtype": "Link",
+   "label": "Uploader",
+   "options": "User",
+   "read_only": 1,
+   "in_list_view": 1,
+   "ignore_user_permissions": 1
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Construction Project",
+   "read_only": 1,
+   "in_list_view": 1,
+   "ignore_user_permissions": 1
+  },
+  {
+   "description": "The folder the File is made in once clean (the project's From client folder)",
+   "fieldname": "folder",
+   "fieldtype": "Data",
+   "label": "Folder",
+   "length": 140,
+   "read_only": 1
+  },
+  {
+   "fieldname": "file_name",
+   "fieldtype": "Data",
+   "label": "File Name",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "ext",
+   "fieldtype": "Data",
+   "label": "Type",
+   "length": 16,
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "size",
+   "fieldtype": "Int",
+   "label": "Bytes",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sha256",
+   "fieldtype": "Data",
+   "label": "SHA-256",
+   "length": 64,
+   "read_only": 1
+  },
+  {
+   "description": "The bytes' file name under <site>/private/cc_scan_hold; empty once they are gone",
+   "fieldname": "staged",
+   "fieldtype": "Data",
+   "label": "Held As",
+   "length": 64,
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_state",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Checking",
+   "fieldname": "state",
+   "fieldtype": "Select",
+   "label": "State",
+   "options": "Checking\nRefused",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "description": "Why it was refused: threat, could_not_check, not_stored",
+   "fieldname": "reason",
+   "fieldtype": "Data",
+   "label": "Reason",
+   "length": 32,
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "tries",
+   "fieldtype": "Int",
+   "label": "Scan Tries",
+   "read_only": 1
+  },
+  {
+   "fieldname": "next_try",
+   "fieldtype": "Datetime",
+   "label": "Next Try",
+   "read_only": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-10-20 19:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Scan Hold",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

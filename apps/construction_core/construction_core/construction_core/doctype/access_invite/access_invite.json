@@ -1,0 +1,227 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "hash",
+ "creation": "2026-10-12 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "kind",
+  "project",
+  "role",
+  "email",
+  "full_name",
+  "job_title",
+  "column_break_state",
+  "status",
+  "expires_on",
+  "mail_state",
+  "invited_by",
+  "revoked_by",
+  "revoked_on",
+  "used_on",
+  "account",
+  "renewals",
+  "renewed_on",
+  "section_secret",
+  "token_hash",
+  "mail_token_hash",
+  "codes_sent",
+  "section_requests",
+  "requests"
+ ],
+ "fields": [
+  {
+   "fieldname": "kind",
+   "fieldtype": "Select",
+   "label": "Kind",
+   "options": "Client\nStaff\nOwner",
+   "default": "Client",
+   "reqd": 1,
+   "set_only_once": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Construction Project",
+   "options": "Construction Project",
+   "set_only_once": 1,
+   "search_index": 1,
+   "ignore_user_permissions": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "role",
+   "fieldtype": "Select",
+   "label": "Role",
+   "options": "Construction Client\nConstruction Manager\nConstruction Staff",
+   "default": "Construction Client",
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "options": "Email",
+   "set_only_once": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "label": "Name",
+   "length": 140
+  },
+  {
+   "fieldname": "job_title",
+   "fieldtype": "Data",
+   "label": "Job title on this project",
+   "length": 140
+  },
+  {
+   "fieldname": "column_break_state",
+   "fieldtype": "Column Break",
+   "label": ""
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Active\nUsed\nRevoked\nExpired",
+   "default": "Active",
+   "in_list_view": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "expires_on",
+   "fieldtype": "Datetime",
+   "label": "Expires On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "mail_state",
+   "fieldtype": "Select",
+   "label": "Mail",
+   "options": "Not sent\nQueued\nSent\nFailed",
+   "default": "Not sent",
+   "read_only": 1
+  },
+  {
+   "fieldname": "invited_by",
+   "fieldtype": "Link",
+   "label": "Invited By",
+   "options": "User",
+   "ignore_user_permissions": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "revoked_by",
+   "fieldtype": "Link",
+   "label": "Revoked By",
+   "options": "User",
+   "ignore_user_permissions": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "revoked_on",
+   "fieldtype": "Datetime",
+   "label": "Revoked On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "used_on",
+   "fieldtype": "Datetime",
+   "label": "Used On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "account",
+   "fieldtype": "Link",
+   "label": "Account",
+   "options": "User",
+   "ignore_user_permissions": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "renewals",
+   "fieldtype": "Int",
+   "label": "Renewals Today",
+   "read_only": 1,
+   "hidden": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "renewed_on",
+   "fieldtype": "Date",
+   "label": "Renewed On",
+   "read_only": 1,
+   "hidden": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "section_secret",
+   "fieldtype": "Section Break",
+   "label": ""
+  },
+  {
+   "fieldname": "token_hash",
+   "fieldtype": "Data",
+   "label": "Token Hash",
+   "unique": 1,
+   "read_only": 1,
+   "hidden": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "mail_token_hash",
+   "fieldtype": "Data",
+   "label": "Mailed Link Hash",
+   "unique": 1,
+   "read_only": 1,
+   "hidden": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "codes_sent",
+   "fieldtype": "Int",
+   "label": "Codes Sent (all requests)",
+   "read_only": 1,
+   "hidden": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "section_requests",
+   "fieldtype": "Section Break",
+   "label": "Requests"
+  },
+  {
+   "fieldname": "requests",
+   "fieldtype": "Table",
+   "label": "Requests",
+   "options": "Access Request",
+   "read_only": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-10-26 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Access Invite",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0,
+ "title_field": "full_name"
+}

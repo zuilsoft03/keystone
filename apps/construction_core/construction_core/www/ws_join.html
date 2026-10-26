@@ -1,0 +1,16 @@
+{% extends spa_base or "templates/web.html" %}
+
+{% block title %}{{ title | e }}{% endblock %}
+
+{% block page_content %}
+{#- P3-17 (D-214): the page without its app. It never shows invitation data; the app asks the server for it. -#}
+<div style="max-width: 380px; margin: 48px auto; padding: 0 20px">
+{% if view == "not_found" %}
+<h1>Not found</h1>
+<p>The page you are looking for is not here.</p>
+{% else %}
+<h1>Join your project</h1>
+<p>This page needs a browser that runs it. Open the link you were sent in your phone's or computer's own browser.</p>
+{% endif %}
+</div>
+{% endblock %}

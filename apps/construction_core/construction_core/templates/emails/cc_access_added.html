@@ -1,0 +1,4 @@
+{% if logo_url %}<p style="margin: 0 0 16px;"><img src="{{ logo_url | e }}" alt="{{ brand | e }}" height="40" style="height: 40px; width: auto; border: 0;"></p>{% endif %}
+<p>The project team{% if brand %} at {{ brand | e }}{% endif %} added a project to your account{% if not brand %} on {{ product | e }}{% endif %}.</p>
+<p><a href="{{ link | e }}">Open your projects</a> and sign in with your email and your usual password.</p>
+{{ credit_html | safe }}

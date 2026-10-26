@@ -1,0 +1,39 @@
+{
+  "profile": "core+office",
+  "base": {
+    "recipe": "dev/Containerfile.core",
+    "frappe_docker": "ca1826c21f7fa5c5b0ace69fd2ab297585154a52",
+    "python": "python:3.14.8-slim-trixie@sha256:a2b82f3c48559aa0a8446d9af49826b6e2b2016f4cd2afabfe6013ec53729170",
+    "node": "24",
+    "bench": "5.31.0",
+    "shell_node": "node:24.21.0-bookworm-slim@sha256:d6aa754f16b3197301076f047b5def2f02ea1dbbc2ca920407d46d7ec7f87b20"
+  },
+  "apps": {
+    "frappe": {
+      "url": "https://github.com/frappe/frappe",
+      "commit": "f20f92d29706510551b4438cc196b0323a7f1a92",
+      "describe": "v16.50.0"
+    },
+    "construction_core": {
+      "source": "repo",
+      "path": "apps/construction_core"
+    },
+    "construction_shell": {
+      "source": "repo",
+      "path": "apps/construction_shell",
+      "requires": [
+        "construction_core"
+      ],
+      "lockfile": "apps/construction_shell/frontend/package-lock.json"
+    }
+  },
+  "services": {
+    "proxy": "caddy:2.10.2-alpine@sha256:4c6e91c6ed0e2fa03efd5b44747b625fec79bc9cd06ac5235a779726618e530d",
+    "mariadb": "mariadb:11.8@sha256:2439dcd7d14010ecd1ff7a4e1c5abe8e208c34fe35290744deeeaac3569043c3",
+    "redis": "redis:7-alpine@sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+    "documentserver": "onlyoffice/documentserver:9.4.0.1@sha256:3ab6ebc7c605e5a32b7ae3ff19daed4925090245acc8100ce2230bd766c88212",
+    "clamav": "clamav/clamav:1.4.6_base@sha256:90effb795234e6a93b070310a4bab5a58d93d94b9a077a09ce2229947679782b"
+  },
+  "build_packages": [],
+  "adapters": {}
+}

@@ -1,0 +1,114 @@
+{
+ "actions": [],
+ "creation": "2026-10-26 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "issingle": 1,
+ "field_order": [
+  "firm_section",
+  "legal_name",
+  "tin",
+  "address",
+  "phone",
+  "privacy_email",
+  "defaults_section",
+  "default_vat",
+  "default_retention",
+  "default_withholding",
+  "setup_section",
+  "setup_finished_on",
+  "steps"
+ ],
+ "fields": [
+  {
+   "fieldname": "firm_section",
+   "fieldtype": "Section Break",
+   "label": "Firm",
+   "description": "P3-51 (D-344): the firm's legal details and privacy contact. The company name is on the Brand page. System Managers only (T7)."
+  },
+  {
+   "fieldname": "legal_name",
+   "fieldtype": "Data",
+   "label": "Legal name",
+   "length": 140
+  },
+  {
+   "fieldname": "tin",
+   "fieldtype": "Data",
+   "label": "TIN",
+   "length": 40
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Small Text",
+   "label": "Office address"
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "label": "Phone",
+   "length": 40
+  },
+  {
+   "fieldname": "privacy_email",
+   "fieldtype": "Data",
+   "label": "Privacy contact email",
+   "options": "Email",
+   "length": 120
+  },
+  {
+   "fieldname": "defaults_section",
+   "fieldtype": "Section Break",
+   "label": "Project defaults"
+  },
+  {
+   "fieldname": "default_vat",
+   "fieldtype": "Percent",
+   "label": "Default VAT"
+  },
+  {
+   "fieldname": "default_retention",
+   "fieldtype": "Percent",
+   "label": "Default retention"
+  },
+  {
+   "fieldname": "default_withholding",
+   "fieldtype": "Percent",
+   "label": "Default withholding"
+  },
+  {
+   "fieldname": "setup_section",
+   "fieldtype": "Section Break",
+   "label": "Set-up"
+  },
+  {
+   "fieldname": "setup_finished_on",
+   "fieldtype": "Datetime",
+   "label": "Set-up finished on",
+   "read_only": 1
+  },
+  {
+   "fieldname": "steps",
+   "fieldtype": "Table",
+   "label": "Steps",
+   "options": "Firm Setup Step",
+   "read_only": 1
+  }
+ ],
+ "links": [],
+ "modified": "2026-10-26 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Construction Core",
+ "name": "Firm Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

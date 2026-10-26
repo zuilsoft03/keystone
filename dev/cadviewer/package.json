@@ -1,0 +1,23 @@
+{
+  "name": "cc-cadviewer",
+  "private": true,
+  "version": "1.7.6",
+  "description": "The Files viewer's DWG/DXF page (P3-49, D-328): mlightcad's cad-simple-viewer, built by dev/build-cadviewer.sh",
+  "type": "module",
+  "scripts": {
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@mlightcad/cad-simple-viewer": "1.7.6",
+    "@mlightcad/data-model": "1.15.11",
+    "@mlightcad/libredwg-converter": "3.15.11",
+    "@mlightcad/mtext-parser": "1.5.5",
+    "@mlightcad/mtext-renderer": "0.13.4",
+    "@mlightcad/three-renderer": "1.7.6",
+    "lodash-es": "4.17.21",
+    "three": "0.172.0"
+  },
+  "devDependencies": {
+    "vite": "5.4.21"
+  }
+}

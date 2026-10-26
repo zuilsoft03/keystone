@@ -1,0 +1,246 @@
+upstream backend-server {
+	server ${BACKEND} fail_timeout=0;
+}
+
+upstream socketio-server {
+	server ${SOCKETIO} fail_timeout=0;
+}
+
+# The realtime server compares Host and Origin, but this file rewrites both for it; so the check happens
+# here: a /socket.io request is refused unless the browser's Origin is exactly the host and port it asked for.
+map "$http_host|$http_origin" $cc_foreign_origin {
+	"~*^(?<h>[^|]+)\|https?://\k<h>$" 0;  # same host and port, exactly
+	# A same-origin polling GET carries no Origin; every cross-origin request and every websocket handshake does,
+	# and a request without one cannot read the response cross-origin (Engine.IO v4 has no JSONP).
+	"~^[^|]*\|$" 0;
+	default 1;
+}
+
+# Permissions-Policy (P3-10; discussion §3.6, approvals §4.7): no camera anywhere (Take photo uses the file picker); the
+# microphone for voice notes on the app's own pages; location for the client's approval answer on the portal only.
+# /office/ and the vendored viewers run third-party code on this origin and get none (their locations add it below).
+# $uri is decoded and normalised, so an encoded path gets the policy of the page it reaches.
+map $uri $cc_permissions_policy {
+	~^/portal(/|$) "camera=(), microphone=(self), geolocation=(self)";
+	default "camera=(), microphone=(self), geolocation=()";
+}
+
+# Parse the X-Forwarded-Proto header - if set - defaulting to $scheme.
+map $http_x_forwarded_proto $proxy_x_forwarded_proto {
+	default $scheme;
+	https https;
+}
+
+server {
+	listen ${NGINX_LISTEN_PORT};
+	server_name ${FRAPPE_SITE_NAME_HEADER};
+  absolute_redirect off;
+	root /home/frappe/frappe-bench/sites;
+
+	proxy_buffer_size 128k;
+	proxy_buffers 4 256k;
+	proxy_busy_buffers_size 256k;
+
+	include /etc/nginx/snippets/security_headers.conf;
+	add_header Permissions-Policy $cc_permissions_policy always;
+
+	# A dot segment next to an encoded slash or backslash, anywhere in the path, is refused here, first (P3-48, re-audit).
+	# A browser percent-decodes a path before it matches it against a policy's path, but resolves dot segments only
+	# around real slashes; nginx decodes and resolves them all. So "<folder>%2F..%2F..", or "/%61ssets/<folder>/..%2F..",
+	# counts as inside Open CAD Studio's folder for its policy (below) yet reaches, or is redirected to, any other path of
+	# this site with the session. Names with an encoded slash but no ".." beside it (a Desk record name) still pass.
+	if ($request_uri ~* "^[^?]*((\.|%2e){2}(%2f|%5c)|(%2f|%5c)(\.|%2e){2})") {
+		return 400;
+	}
+
+	set_real_ip_from ${UPSTREAM_REAL_IP_ADDRESS};
+	real_ip_header ${UPSTREAM_REAL_IP_HEADER};
+	real_ip_recursive ${UPSTREAM_REAL_IP_RECURSIVE};
+
+	location /assets {
+		try_files $uri =404;
+	}
+
+	# Open CAD Studio, the Files viewer's DWG/DXF program (P3-48, D-319, audit M3). It runs in a frame on this origin, so
+	# its own policy keeps a drawing from making the browser call anything outside its folder: another server, or this
+	# site with the staff session (a raster image named by URL, a hyperlink, a deep link). Its scripts and style are files
+	# in the folder (dev/build-opencadstudio.sh), so the policy holds no per-build hash. The sandbox blocks new windows.
+	# A page opened on its own, outside our viewer's frame, is refused, so its stored drawings cannot be reopened there.
+	# A location with add_header drops the server's add_header lines, so the snippet is included again.
+	location ~* ^(?<cc_ocs_root>/assets/construction_core/vendor/opencadstudio-[0-9A-Za-z._-]+/) {
+		if ($http_sec_fetch_dest = "document") {
+			return 403;
+		}
+		try_files $uri =404;
+		include /etc/nginx/snippets/security_headers.conf;
+		add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+		set $cc_ocs "$proxy_x_forwarded_proto://$http_host$cc_ocs_root";
+		add_header Cache-Control "no-cache" always;  # each use revalidates (a 304), so a changed policy reaches every browser
+		add_header Content-Security-Policy "default-src 'none'; script-src $cc_ocs 'wasm-unsafe-eval'; script-src-attr 'unsafe-hashes' 'sha256-aWb9wUz3Rst2uCnRYQGyEEnmASxKbX8e1quTnyCFC58=' 'sha256-JMccRiTfN02e/7wbx3y7ix9WNLFsyr+Z8hamqLrTapw='; worker-src $cc_ocs blob:; connect-src $cc_ocs; img-src $cc_ocs blob:; style-src-elem $cc_ocs 'sha256-9tSqG2Th9gNn6sbn1ZYMSqakJLznxnsamRDeigez2Mo='; style-src-attr 'unsafe-inline'; manifest-src $cc_ocs; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; sandbox allow-scripts allow-same-origin allow-downloads allow-forms allow-modals" always;
+	}
+
+	# The drawing viewer, the Files viewer's DWG/DXF page (P3-49, D-328, D-329): mlightcad's cad-simple-viewer with the
+	# LibreDWG worker, in a frame on this origin, fenced as Open CAD Studio is (above): its own policy holds every
+	# request of the page and its workers (each worker takes the policy of its own response) to its folder, so a default
+	# left pointing at a CDN fails closed; a page opened on its own is refused; no windows, forms or downloads. Its
+	# workers' wasm and fonts are fetched; its injected toolbar and overlay styles need 'unsafe-inline' for styles only.
+	# The build writes a .gz beside each file (dev/build-cadviewer.sh): the 10 MB wasm goes out as about 2.5 MB.
+	# The folder's names match in any case (P3-49 audit): the dev bind mount ignores case, so an upper-case name would
+	# otherwise reach the files outside these locations, with no policy (Open CAD Studio's location above too).
+	# Its notices and source (the GPL, the OFL texts, NOTICE.txt, source/) may be opened on their own, as plain text that
+	# runs nothing.
+	location ~* ^/assets/construction_core/vendor/cadviewer-[0-9A-Za-z._-]+/(NOTICE\.txt|LICENSE|licenses/[^/]+|fonts/OFL-[^/]+\.txt|source/.+)$ {
+		try_files $uri =404;
+		include /etc/nginx/snippets/security_headers.conf;
+		add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+		types { }
+		default_type "text/plain; charset=utf-8";
+		add_header Cache-Control "no-cache" always;
+		add_header Content-Security-Policy "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; sandbox" always;
+	}
+	# The DWG worker alone may also evaluate strings: LibreDWG's bindings (Emscripten's embind) build their call wrappers
+	# with new Function. It is a worker, so it reaches no page, and its requests are still held to the folder.
+	location ~* ^(?<cc_dwg_root>/assets/construction_core/vendor/cadviewer-[0-9A-Za-z._-]+/)workers/libredwg-parser-worker\.js$ {
+		if ($http_sec_fetch_dest = "document") {
+			return 403;
+		}
+		gzip_static on;
+		try_files $uri =404;
+		include /etc/nginx/snippets/security_headers.conf;
+		add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+		set $cc_dwg "$proxy_x_forwarded_proto://$http_host$cc_dwg_root";
+		add_header Cache-Control "no-cache" always;
+		add_header Content-Security-Policy "default-src 'none'; script-src $cc_dwg 'wasm-unsafe-eval' 'unsafe-eval'; connect-src $cc_dwg; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; sandbox allow-scripts allow-same-origin" always;
+	}
+	location ~* ^(?<cc_cv_root>/assets/construction_core/vendor/cadviewer-[0-9A-Za-z._-]+/) {
+		if ($http_sec_fetch_dest = "document") {
+			return 403;
+		}
+		gzip_static on;
+		try_files $uri =404;
+		include /etc/nginx/snippets/security_headers.conf;
+		add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+		set $cc_cv "$proxy_x_forwarded_proto://$http_host$cc_cv_root";
+		add_header Cache-Control "no-cache" always;
+		add_header Content-Security-Policy "default-src 'none'; script-src $cc_cv 'wasm-unsafe-eval'; worker-src $cc_cv; connect-src $cc_cv; img-src $cc_cv blob: data:; font-src $cc_cv; style-src-elem $cc_cv 'unsafe-inline'; style-src-attr 'unsafe-inline'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; sandbox allow-scripts allow-same-origin" always;
+	}
+
+	# The other vendored viewers (pdf.js and the rest): the strict policy, as the locations above.
+	location /assets/construction_core/vendor/ {
+		try_files $uri =404;
+		include /etc/nginx/snippets/security_headers.conf;
+		add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+	}
+
+	location ~ ^/protected/(.*) {
+		internal;
+		try_files /${FRAPPE_SITE_NAME_HEADER}/$1 =404;
+	}
+
+	# ONLYOFFICE Document Server under /office/ (P1-17, D-081). Resolved per request through Docker's DNS, so the
+	# core profile (no Document Server) still starts; X-Forwarded-Host carries the virtual path to the server.
+	# The Document Server's welcome and example pages are not for users (P1-17 audit).
+	location ~ ^/office/(welcome|example)(/|$) {
+		return 404;
+	}
+
+	location /office/ {
+		resolver 127.0.0.11 valid=30s ipv6=off;
+		set $cc_ds http://documentserver:80;
+		rewrite ^/office/(.*)$ /$1 break;
+		proxy_pass $cc_ds;
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection "upgrade";
+		proxy_set_header X-Forwarded-Host $http_host/office;
+		proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_read_timeout 3600s;
+		client_max_body_size 100m;
+		include /etc/nginx/snippets/security_headers.conf;
+		add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+	}
+
+	location /socket.io {
+		if ($cc_foreign_origin) {
+			return 403;
+		}
+		proxy_http_version 1.1;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection "upgrade";
+		proxy_set_header X-Frappe-Site-Name ${FRAPPE_SITE_NAME_HEADER};
+		# The realtime server authenticates the browser by calling <Origin>/api/method/... with its cookie. Origin is
+		# checked above, then pointed at this nginx inside the stack (the site name is this service's network alias,
+		# deploy/compose.yml), so that call never needs public DNS or the public certificate. In dev, Frappe swaps the
+		# port for webserver_port and the backend carries the alias.
+		proxy_set_header Origin http://${FRAPPE_SITE_NAME_HEADER}:${NGINX_LISTEN_PORT};
+		# The realtime server requires the same host name in Host and Origin.
+		proxy_set_header Host ${FRAPPE_SITE_NAME_HEADER};
+
+		proxy_pass http://socketio-server;
+	}
+
+	location / {
+		rewrite ^(.+)/$ $1 permanent;
+		rewrite ^(.+)/index\.html$ $1 permanent;
+		rewrite ^(.+)\.html$ $1 permanent;
+
+		location ~ ^/files/.*.(htm|html|svg|xml) {
+			include /etc/nginx/snippets/security_headers.conf;
+			add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+			add_header Content-disposition "attachment";
+			try_files /${FRAPPE_SITE_NAME_HEADER}/public/$uri @webserver;
+		}
+
+		try_files /${FRAPPE_SITE_NAME_HEADER}/public/$uri @webserver;
+	}
+
+	location @webserver {
+		proxy_http_version 1.1;
+		proxy_set_header X-Forwarded-For $remote_addr;
+		proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
+		proxy_set_header X-Frappe-Site-Name ${FRAPPE_SITE_NAME_HEADER};
+		proxy_set_header Host $http_host;  # keep the published port (Frappe builds redirects from it)
+		proxy_set_header X-Use-X-Accel-Redirect True;
+		proxy_read_timeout ${PROXY_READ_TIMEOUT};
+		proxy_redirect off;
+
+		proxy_pass  http://backend-server;
+	}
+
+	# optimizations
+	sendfile on;
+	keepalive_timeout 15;
+	client_max_body_size ${CLIENT_MAX_BODY_SIZE};
+	client_body_buffer_size 16K;
+	client_header_buffer_size 1k;
+
+	# enable gzip compression
+	# based on https://mattstauffer.co/blog/enabling-gzip-on-nginx-servers-including-laravel-forge
+	gzip on;
+	gzip_http_version 1.1;
+	gzip_comp_level 5;
+	gzip_min_length 256;
+	gzip_proxied any;
+	gzip_vary on;
+	gzip_types
+		application/atom+xml
+		application/javascript
+		application/json
+		application/rss+xml
+		application/vnd.ms-fontobject
+		application/x-font-ttf
+		application/font-woff
+		application/x-web-app-manifest+json
+		application/xhtml+xml
+		application/xml
+		font/opentype
+		image/svg+xml
+		image/x-icon
+		text/css
+		text/plain
+		text/x-component;
+		# text/html is always compressed by HttpGzipModule
+}

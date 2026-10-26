@@ -1,0 +1,28 @@
+{% extends spa_base or "templates/web.html" %}
+
+{% block title %}{{ _("Confirm the evidence mailbox") }}{% endblock %}
+
+{% block page_content %}
+{#- P3-77 (approvals design §3.2 item 3): the confirm link's page. The token stays in the link's fragment, which never
+reaches the server; only the button posts it (construction_core.approvals.api.confirm_evidence_mailbox). This is the page
+without its app (the shell's mailbox app draws it otherwise, see evidence_mailbox.py); the button goes once it is used. -#}
+<div style="max-width: 380px; margin: 48px auto; padding: 0 20px">
+<h1>{{ _("Confirm the evidence mailbox") }}</h1>
+<p id="cc-mailbox-text">{{ _("This mailbox receives the records of client approvals. Confirm it if you expected this message.") }}</p>
+<button id="cc-mailbox-confirm" type="button" class="btn btn-primary">{{ _("Confirm the mailbox") }}</button>
+</div>
+<script>
+document.getElementById("cc-mailbox-confirm").addEventListener("click", async (event) => {
+	event.target.hidden = true;
+	const token = new URLSearchParams(location.hash.slice(1)).get("k") || "";
+	const response = await fetch("/api/method/construction_core.approvals.api.confirm_evidence_mailbox", {
+		method: "POST",
+		headers: {"Content-Type": "application/json", "X-Frappe-CSRF-Token": (window.frappe && frappe.csrf_token) || ""},
+		body: JSON.stringify({token}),
+	}).catch(() => null);
+	document.getElementById("cc-mailbox-text").textContent = response && response.ok
+		? {{ _("The evidence mailbox is confirmed. You can close this page.") | tojson }}
+		: {{ _("This link does not work. Ask for a new test message.") | tojson }};
+});
+</script>
+{% endblock %}
